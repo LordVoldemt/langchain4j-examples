@@ -9,6 +9,10 @@ import java.util.concurrent.CompletableFuture;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+/**
+ * 这个示例学习 AI Service 的流式返回：接口方法返回 TokenStream，而不是一次性 String。
+ * demo key 不支持 streaming，运行时请配置自己的 OPENAI_API_KEY。
+ */
 public class ServiceWithStreamingExample {
 
     interface Assistant {
@@ -26,6 +30,7 @@ public class ServiceWithStreamingExample {
 
         Assistant assistant = AiServices.create(Assistant.class, model);
 
+        // TokenStream 需要注册回调并调用 start()，否则不会真正开始请求。
         TokenStream tokenStream = assistant.chat("Tell me a joke");
 
         CompletableFuture<ChatResponse> futureResponse = new CompletableFuture<>();

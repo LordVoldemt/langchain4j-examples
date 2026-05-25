@@ -39,6 +39,7 @@ public class OpenAiFunctionCallingExamples {
         static ChatModel openAiModel = OpenAiChatModel.builder()
                 .apiKey(ApiKeys.OPENAI_API_KEY)
                 .modelName(GPT_4_O)
+                // strictTools 让工具参数更严格地遵循声明的 schema，减少模型生成不可执行参数的概率。
                 .strictTools(true) // https://docs.langchain4j.dev/integrations/language-models/open-ai#structured-outputs-for-tools
                 .logRequests(true)
                 .logResponses(true)
@@ -49,6 +50,7 @@ public class OpenAiFunctionCallingExamples {
             // STEP 1: User specify tools and query
             // Tools
             WeatherTools weatherTools = new WeatherTools();
+            // @Tool 方法会被转换为 ToolSpecification，随请求发送给模型供其选择是否调用。
             List<ToolSpecification> toolSpecifications = ToolSpecifications.toolSpecificationsFrom(weatherTools);
             // User query
             List<ChatMessage> chatMessages = new ArrayList<>();
@@ -66,6 +68,7 @@ public class OpenAiFunctionCallingExamples {
             // STEP 2: Model generates tool execution request
             ChatResponse chatResponse = openAiModel.chat(chatRequest);
             AiMessage aiMessage = chatResponse.aiMessage();
+            // 第一次模型响应只给出要调用的工具名和参数，真正执行业务代码仍由应用侧完成。
             List<ToolExecutionRequest> toolExecutionRequests = aiMessage.toolExecutionRequests();
             System.out.println("Out of the " + toolSpecifications.size() + " tools declared in WeatherTools, " + toolExecutionRequests.size() + " will be invoked:");
             toolExecutionRequests.forEach(toolExecutionRequest -> {
@@ -80,6 +83,7 @@ public class OpenAiFunctionCallingExamples {
                 ToolExecutor toolExecutor = new DefaultToolExecutor(weatherTools, toolExecutionRequest);
                 System.out.println("Now let's execute the tool " + toolExecutionRequest.name());
                 String result = toolExecutor.execute(toolExecutionRequest, UUID.randomUUID().toString());
+                // 工具执行结果要作为 ToolExecutionResultMessage 放回对话，模型才能基于结果生成最终回答。
                 ToolExecutionResultMessage toolExecutionResultMessages = ToolExecutionResultMessage.from(toolExecutionRequest, result);
                 chatMessages.add(toolExecutionResultMessages);
             });

@@ -19,6 +19,7 @@ public class AnswerService {
     }
 
     private void initChat(SearchAction action) {
+        // 创建流式 ChatModel 后，AiServices 会把 Assistant 接口代理成可调用的 AI 服务。
         StreamingChatModel model = OpenAiStreamingChatModel.builder()
                 .apiKey(ApiKeys.OPENAI_API_KEY)
                 .modelName(GPT_4_O_MINI)
@@ -37,6 +38,7 @@ public class AnswerService {
 
         var responseHandler = new CustomStreamingResponseHandler(action);
 
+        // 这里启动真正的流式调用：每个 partial response 都会追加到当前 SearchAction。
         assistant.chat(action.getQuestion())
                 .onPartialResponse(responseHandler::onNext)
                 .onCompleteResponse(responseHandler::onComplete)

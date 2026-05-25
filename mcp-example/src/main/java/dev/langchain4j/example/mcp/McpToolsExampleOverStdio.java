@@ -38,6 +38,7 @@ public class McpToolsExampleOverStdio {
      */
     public static void main(String[] args) throws Exception {
 
+        // 模型负责理解用户意图和选择工具，MCP server 负责真正访问外部能力。
         ChatModel model = OpenAiChatModel.builder()
                 .apiKey(System.getenv("OPENAI_API_KEY"))
                 .modelName("gpt-4o-mini")
@@ -45,6 +46,8 @@ public class McpToolsExampleOverStdio {
 //                .logResponses(true)
                 .build();
 
+        // stdio 模式会启动一个子进程，并通过标准输入/输出交换 MCP JSON-RPC 消息。
+        // allowed directory 是重要安全边界：filesystem server 只能访问这个目录。
         McpTransport transport = new StdioMcpTransport.Builder()
                 .command(List.of("/usr/bin/npm", "exec",
                         "@modelcontextprotocol/server-filesystem@0.6.2",
@@ -58,6 +61,7 @@ public class McpToolsExampleOverStdio {
                 .transport(transport)
                 .build();
 
+        // McpToolProvider 会把 MCP server 暴露的工具转换成 LangChain4j 可调用的工具列表。
         ToolProvider toolProvider = McpToolProvider.builder()
                 .mcpClients(List.of(mcpClient))
                 .build();
@@ -72,6 +76,7 @@ public class McpToolsExampleOverStdio {
             String response = bot.chat("Read the contents of the file " + file.getAbsolutePath());
             System.out.println("RESPONSE: " + response);
         } finally {
+            // stdio 子进程和连接资源需要显式关闭，避免示例结束后残留后台进程。
             mcpClient.close();
         }
     }

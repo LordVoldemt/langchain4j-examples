@@ -9,6 +9,8 @@ import dev.langchain4j.service.spring.AiService;
 @AiService
 public interface CustomerSupportAgent {
 
+    // Spring 会把 @AiService 接口注册成可注入的 Bean，方法调用会被转成一次对话请求。
+    // @MemoryId 用来区分不同用户/会话的聊天记忆，避免多位客户的上下文串在一起。
     @SystemMessage("""
             Your name is Roger, you are a customer support agent of a car rental company named 'Miles of Smiles'.
             You are friendly, polite and concise.

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public class SearchAction {
 
+    // JavaFX TableView 绑定的是 Property，而不是普通字段；流式 token 到来时更新 Property 即可刷新界面。
     private final StringProperty timestamp;
     private final StringProperty question;
     private final StringProperty answer;

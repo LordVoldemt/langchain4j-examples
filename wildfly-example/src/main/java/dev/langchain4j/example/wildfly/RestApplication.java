@@ -9,4 +9,5 @@ import jakarta.ws.rs.core.Application;
 
 @ApplicationPath("/rest")
 public class RestApplication extends Application {
+    // WildFly 中的 JAX-RS 应用根路径；SSE Resource 会挂在 /rest 下面。
 }

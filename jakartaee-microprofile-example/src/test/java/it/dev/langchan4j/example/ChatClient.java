@@ -1,3 +1,4 @@
+// 中文说明：Jakarta EE / MicroProfile 测试代码，用来验证聊天服务和模型 REST 接口。
 package it.dev.langchan4j.example;
 
 import java.net.URI;

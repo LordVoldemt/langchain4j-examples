@@ -1,3 +1,4 @@
+// 中文说明：gpullama3.java 本地模型示例代码，用来演示本地模型聊天、流式输出或 Agent 工作流。
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;

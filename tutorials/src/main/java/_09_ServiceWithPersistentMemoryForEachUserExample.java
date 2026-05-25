@@ -19,6 +19,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static org.mapdb.Serializer.INTEGER;
 import static org.mapdb.Serializer.STRING;
 
+/**
+ * 这个示例学习“按用户隔离并持久化”的聊天记忆。
+ * @MemoryId 用来区分不同用户/会话，ChatMemoryStore 决定消息保存到哪里；示例使用 MapDB，本地运行会产生数据库文件。
+ */
 public class _09_ServiceWithPersistentMemoryForEachUserExample {
 
     interface Assistant {
@@ -30,6 +34,7 @@ public class _09_ServiceWithPersistentMemoryForEachUserExample {
 
         PersistentChatMemoryStore store = new PersistentChatMemoryStore();
 
+        // 每个 memoryId 都会拿到独立的 ChatMemory，避免不同用户的对话串在一起。
         ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
                 .id(memoryId)
                 .maxMessages(10)
@@ -56,6 +61,7 @@ public class _09_ServiceWithPersistentMemoryForEachUserExample {
     }
 
     // You can create your own implementation of ChatMemoryStore and store chat memory whenever you'd like
+    // 中文提示：生产环境通常会把这里替换成数据库、Redis 或对象存储等持久化实现。
     static class PersistentChatMemoryStore implements ChatMemoryStore {
 
         private final DB db = DBMaker.fileDB("multi-user-chat-memory.db").transactionEnable().make();

@@ -58,6 +58,7 @@ public class MenuItemsIngestor {
     @Produces
     @ApplicationScoped
     public EmbeddingModel produceEmbeddingModel() {
+        // CDI producer 把 EmbeddingModel 放进容器，其他服务可以直接注入使用。
         return new AllMiniLmL6V2EmbeddingModel();
     }
 
@@ -70,6 +71,7 @@ public class MenuItemsIngestor {
     @ApplicationScoped
     @Named("EmbeddingStore")
     public EmbeddingStore<TextSegment> produceEmbeddingStore() {
+        // 示例使用内存向量库，重启后会重新从菜单 JSON 生成 embedding。
         return new InMemoryEmbeddingStore<>();
     }
 
@@ -85,6 +87,7 @@ public class MenuItemsIngestor {
      *                  context has been fully initialized (not used in the method)
      */
     public void ingest(@Observes @Initialized(ApplicationScoped.class) Object initEvent) {
+        // CDI 应用作用域初始化完成后自动触发，提前把菜单数据写入向量库供聊天检索使用。
         // Create ingestor with given embedding model and embedding storage
         var ingestor = EmbeddingStoreIngestor.builder()
                 .embeddingModel(embeddingModel)

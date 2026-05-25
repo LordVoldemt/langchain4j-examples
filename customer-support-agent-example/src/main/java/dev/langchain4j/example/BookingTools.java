@@ -14,6 +14,8 @@ public class BookingTools {
         this.bookingService = bookingService;
     }
 
+    // 这些 @Tool 方法是模型能触达业务系统的唯一入口；
+    // 因此真正的校验仍放在 BookingService 中，而不是只依赖提示词约束模型。
     @Tool
     public Booking getBookingDetails(String bookingNumber, String customerName, String customerSurname) {
         return bookingService.getBookingDetails(bookingNumber, customerName, customerSurname);

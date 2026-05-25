@@ -17,6 +17,7 @@ class WatsonxStreamingChatModelReasoningTest {
 
         try {
 
+            // 流式 reasoning 场景会在增量输出中同时处理思考内容和最终回答内容。
             StreamingChatModel model = WatsonxStreamingChatModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

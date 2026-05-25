@@ -23,6 +23,7 @@ public class BedrockChatModelExample {
             // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
             // More info on creating the API keys:
             // https://docs.aws.amazon.com/bedrock/latest/userguide/api-setup.html
+            // Bedrock 通过 AWS 凭证链鉴权；modelId 是 Bedrock Converse API 中的模型标识。
             ChatModel chatModel = BedrockChatModel.builder()
                     .modelId("us.amazon.nova-lite-v1:0")
                     .build();
@@ -37,6 +38,7 @@ public class BedrockChatModelExample {
 
         public static void main(String[] args) {
 
+            // 多模态模型可以把文本和图片内容放进同一个 UserMessage。
             ChatModel chatModel = BedrockChatModel.builder()
                     .modelId("us.amazon.nova-lite-v1:0")
                     .build();
@@ -56,6 +58,7 @@ public class BedrockChatModelExample {
 
         public static void main(String[] args) {
 
+            // PDF 输入通过 PdfFileContent 作为消息内容传给支持文档理解的 Bedrock 模型。
             ChatModel chatModel = BedrockChatModel.builder()
                     .modelId("us.amazon.nova-lite-v1:0")
                     .build();
@@ -83,6 +86,7 @@ public class BedrockChatModelExample {
 
             ChatModel chatModel = BedrockChatModel.builder()
                     .modelId("us.amazon.nova-lite-v1:0")
+                    // 默认参数可在单次 ChatRequest 中被覆盖，适合设置统一温度和输出长度。
                     .defaultRequestParameters(defaultParameters)
                     .logRequests(true)
                     .build();
@@ -111,6 +115,7 @@ public class BedrockChatModelExample {
         public static void main(String[] args) {
 
             ChatRequestParameters defaultParameters = BedrockChatRequestParameters.builder()
+                    // reasoning 会预留思考 token 预算，适合支持推理模式的模型。
                     // enabling reasoning with a budget of 1024 tokens
                     .enableReasoning(1024)
                     .build();

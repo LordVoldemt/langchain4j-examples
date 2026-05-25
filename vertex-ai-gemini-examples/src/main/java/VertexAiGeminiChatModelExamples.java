@@ -21,6 +21,7 @@ public class VertexAiGeminiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // Vertex AI 通过 Google Cloud 项目和区域定位资源；鉴权通常来自本机 ADC 或服务账号。
             ChatModel model = VertexAiGeminiChatModel.builder()
                     .project(PROJECT)
                     .location(LOCATION)
@@ -37,6 +38,7 @@ public class VertexAiGeminiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // 流式 Vertex Gemini 会在 token 生成时回调，适合实时输出而不是等待完整回答。
             StreamingChatModel model = VertexAiGeminiStreamingChatModel.builder()
                     .project(PROJECT)
                     .location(LOCATION)

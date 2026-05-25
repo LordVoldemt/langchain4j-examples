@@ -12,6 +12,10 @@ import java.util.Map;
 import static embedding.classification.EmbeddingModelTextClassifierExample.CustomerServiceCategory.*;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个示例学习基于 embedding 的文本分类：先为每个类别准备若干样例，再用相似度判断新文本类别。
+ * 它不需要训练传统模型，但分类效果依赖样例质量和 embedding 模型是否适合你的语言/领域。
+ */
 public class EmbeddingModelTextClassifierExample {
 
     enum CustomerServiceCategory {
@@ -27,6 +31,7 @@ public class EmbeddingModelTextClassifierExample {
 
     public static void main(String[] args) {
 
+        // 每个类别的样例越有代表性，分类器越容易找到语义相近的类别。
         Map<CustomerServiceCategory, List<String>> examples = new HashMap<>();
         examples.put(BILLING_AND_PAYMENTS, asList(
                 "Can I pay using PayPal?",
@@ -170,6 +175,7 @@ public class EmbeddingModelTextClassifierExample {
         ));
 
         EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
+        // EmbeddingModelTextClassifier 会把样例和待分类文本向量化，并按相似度选择类别。
         TextClassifier<CustomerServiceCategory> classifier = new EmbeddingModelTextClassifier<>(embeddingModel, examples);
 
         List<CustomerServiceCategory> categories = classifier.classify("Yo where is my package?");

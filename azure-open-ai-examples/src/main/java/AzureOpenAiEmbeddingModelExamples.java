@@ -8,6 +8,7 @@ public class AzureOpenAiEmbeddingModelExamples {
 
         public static void main(String[] args) {
 
+            // embedding 示例要使用专门的 embedding deployment，而不是聊天模型的 deployment。
             AzureOpenAiEmbeddingModel model = AzureOpenAiEmbeddingModel.builder()
                     .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
@@ -15,6 +16,7 @@ public class AzureOpenAiEmbeddingModelExamples {
                     .logRequestsAndResponses(true)
                     .build();
 
+            // embed() 返回向量响应，可继续写入向量库用于语义检索。
             Response<Embedding> response = model.embed("Please embed this sentence.");
 
             System.out.println(response);

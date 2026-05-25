@@ -46,6 +46,7 @@ public class MistralAiBasicRagEmbedExamples {
 
             // Now, for each text segment, we need to create text embeddings, which are numeric representations of the text in the vector space.
             // Of course, we will use Mistral AI for this purpose.
+            // RAG 中切分文档和用户问题必须使用同一个 embedding 模型，向量空间才可比较。
             EmbeddingModel embeddingModel = MistralAiEmbeddingModel.builder()
                     .apiKey(System.getenv("MISTRAL_AI_API_KEY"))
                     .modelName(MISTRAL_EMBED)
@@ -71,6 +72,7 @@ public class MistralAiBasicRagEmbedExamples {
 
             // Now we can offer the relevant information as the context information within the prompt.
             // Here is a prompt template where we can include both the retrieved text and user question in the prompt.
+            // 检索出的片段会作为上下文注入 prompt，再交给聊天模型生成 grounded answer。
             PromptTemplate promptTemplate = PromptTemplate.from(
                     "Context information is below.:\n"
                             + "------------------\n"

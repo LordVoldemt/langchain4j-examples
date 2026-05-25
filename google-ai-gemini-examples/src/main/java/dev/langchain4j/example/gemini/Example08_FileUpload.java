@@ -32,6 +32,7 @@ public class Example08_FileUpload {
     public static void main(String[] args) throws Exception {
         String apiKey = System.getenv("GOOGLE_AI_GEMINI_API_KEY");
 
+        // Files API 先把本地文件上传成 Gemini 可引用的 file URI，再在聊天请求中使用。
         GeminiFiles geminiFiles = GeminiFiles.builder()
                 .apiKey(apiKey)
                 .build();

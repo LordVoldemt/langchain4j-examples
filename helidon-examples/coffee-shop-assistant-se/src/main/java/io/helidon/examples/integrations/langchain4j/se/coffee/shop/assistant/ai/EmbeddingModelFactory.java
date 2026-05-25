@@ -16,6 +16,7 @@ import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2Embedding
 public class EmbeddingModelFactory implements Supplier<EmbeddingModel> {
     @Override
     public EmbeddingModel get() {
+        // EmbeddingModel 负责把菜单文本转换成向量，是 RAG 检索链路的第一步。
         return new AllMiniLmL6V2EmbeddingModel();
     }
 }

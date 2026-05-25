@@ -9,6 +9,8 @@ import domain.CvReview;
 
 public interface HiringDecisionProposer {
     
+    // Human-in-the-loop 场景下，模型只负责把复杂评审压缩成人类易读的决策摘要；
+    // 最终是否推进仍交给人工验证器或用户确认。
     @Agent("Summarizes hiring decision for final validation")
     @SystemMessage("""
         You summarize the hiring reasons in 3 lines max for a given review,

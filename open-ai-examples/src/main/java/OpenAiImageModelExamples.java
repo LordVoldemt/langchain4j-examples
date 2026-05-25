@@ -9,6 +9,7 @@ public class OpenAiImageModelExamples {
 
     public static void main(String[] args) {
 
+        // ImageModel 用于生成图片；modelName 指向图像模型，返回结果通常包含远程图片 URL。
         ImageModel model = OpenAiImageModel.builder()
                 .apiKey(ApiKeys.OPENAI_API_KEY)
                 .modelName(DALL_E_3)

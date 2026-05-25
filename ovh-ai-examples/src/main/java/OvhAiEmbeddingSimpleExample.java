@@ -12,6 +12,7 @@ import java.util.List;
 public class OvhAiEmbeddingSimpleExample {
 
     public static void main(String[] args) {
+        // OVH AI embedding 示例从环境变量读取 apiKey，并把文本转换为可检索的向量。
         EmbeddingModel embeddingModel = OvhAiEmbeddingModel.builder()
                 .apiKey(System.getenv("OVH_AI_API_KEY"))
                 .build();
@@ -28,6 +29,7 @@ public class OvhAiEmbeddingSimpleExample {
         embeddingStore.add(embedding2, segment2);
 
         String userQuery = "What is your favourite sport?";
+        // 查询文本也要使用同一个 embedding 模型向量化，才能和已入库片段做相似度匹配。
         Embedding queryEmbedding = embeddingModel.embed(userQuery).content();
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)

@@ -19,8 +19,10 @@ public class ChromaEmbeddingStoreWithMetadataExample {
 
     public static void main(String[] args) {
         try (ChromaDBContainer chroma = new ChromaDBContainer("chromadb/chroma:1.1.0").withExposedPorts(8000)) {
+            // 使用 Testcontainers 启动临时 Chroma，便于本地直接运行向量检索示例。
             chroma.start();
 
+            // 每次运行创建独立 collection，避免 metadata 过滤受到历史数据影响。
             EmbeddingStore<TextSegment> embeddingStore = ChromaEmbeddingStore.builder()
                 .apiVersion(V2)
                 .baseUrl(chroma.getEndpoint())
@@ -31,6 +33,7 @@ public class ChromaEmbeddingStoreWithMetadataExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 写入文本时携带 userId metadata，后续检索可在相似度搜索前先按 metadata 缩小范围。
             TextSegment segment1 = TextSegment.from("I like football.", Metadata.metadata("userId", "1"));
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -41,7 +44,7 @@ public class ChromaEmbeddingStoreWithMetadataExample {
 
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
 
-            // search for user 1
+            // 只搜索 userId=1 的向量；相似度排序只在过滤后的候选集合中进行。
 
             Filter onlyForUser1 = metadataKey("userId").isEqualTo("1");
 
@@ -57,7 +60,7 @@ public class ChromaEmbeddingStoreWithMetadataExample {
             System.out.println(embeddingMatch1.score());
             System.out.println(embeddingMatch1.embedded().text());
 
-            // search for user 2
+            // 同一个查询向量也可以配合不同 metadata 条件，得到不同用户隔离后的结果。
 
             Filter onlyForUser2 = metadataKey("userId").isEqualTo("2");
 

@@ -7,6 +7,10 @@ import dev.langchain4j.service.UserMessage;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
+/**
+ * 这个示例学习按用户隔离记忆：同一个 Assistant 根据 @MemoryId 使用不同的 ChatMemory。
+ * 在多用户应用中一定要传稳定的用户/会话 id，否则对话上下文会混淆。
+ */
 public class ServiceWithMemoryForEachUserExample {
 
     /**
@@ -25,6 +29,7 @@ public class ServiceWithMemoryForEachUserExample {
                 .modelName(GPT_4_O_MINI)
                 .build();
 
+        // chatMemoryProvider 会为每个 memoryId 创建或复用一份独立记忆。
         Assistant assistant = AiServices.builder(Assistant.class)
                 .chatModel(model)
                 .chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))

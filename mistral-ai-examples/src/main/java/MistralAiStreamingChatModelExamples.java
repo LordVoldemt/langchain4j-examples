@@ -12,6 +12,7 @@ public class MistralAiStreamingChatModelExamples {
 
         public static void main(String[] args) {
 
+            // 流式调用适合长回答场景，partialResponse 到达时即可展示给用户。
             MistralAiStreamingChatModel model = MistralAiStreamingChatModel.builder()
                     .apiKey(System.getenv("MISTRAL_AI_API_KEY")) // Please use your own Mistral AI API key
                     .modelName(MISTRAL_SMALL_LATEST)

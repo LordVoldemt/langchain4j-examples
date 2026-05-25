@@ -13,6 +13,9 @@ import java.util.List;
 /**
  * Demonstrates configuring safety settings with Google AI Gemini.
  *
+ * <p>中文说明：这个示例演示如何为不同风险类别设置安全阈值，
+ * 新手可以重点观察 safetySettings 如何传给模型。
+ *
  * <p>This example shows how to:
  * <ul>
  *   <li>Configure safety thresholds for different harm categories</li>
@@ -42,6 +45,7 @@ import java.util.List;
  */
 public class Example11_ChatWithSafetySettings {
     public static void main(String[] args) {
+        // 每个 GeminiSafetySetting 对应一个风险类别和拦截阈值。
         List<GeminiSafetySetting> safetySettings = List.of(
                 new GeminiSafetySetting(
                         GeminiHarmCategory.HARM_CATEGORY_HARASSMENT,

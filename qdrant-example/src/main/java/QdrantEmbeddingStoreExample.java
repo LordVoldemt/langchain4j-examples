@@ -26,8 +26,10 @@ public class QdrantEmbeddingStoreExample {
   public static void main(String[] args) throws ExecutionException, InterruptedException {
 
     try (QdrantContainer qdrant = new QdrantContainer("qdrant/qdrant:latest")) {
+      // Testcontainers 启动临时 Qdrant，并通过 gRPC 端口连接。
       qdrant.start();
 
+      // EmbeddingStore 绑定到指定 collection；collection 本身下面用原生客户端创建。
       EmbeddingStore<TextSegment> embeddingStore =
               QdrantEmbeddingStore.builder()
                       .host(qdrant.getHost())
@@ -38,8 +40,9 @@ public class QdrantEmbeddingStoreExample {
       QdrantClient client =
               new QdrantClient(
                       QdrantGrpcClient.newBuilder(qdrant.getHost(), qdrant.getMappedPort(grpcPort), false)
-                              .build());
+                      .build());
 
+      // 创建 Qdrant collection，并指定向量维度和距离函数；维度需与 embedding 模型一致。
       client
               .createCollectionAsync(
                       collectionName,
@@ -48,6 +51,7 @@ public class QdrantEmbeddingStoreExample {
 
       EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+      // 写入两条文本向量到 Qdrant collection。
       TextSegment segment1 = TextSegment.from("I've been to France twice.");
       Embedding embedding1 = embeddingModel.embed(segment1).content();
       embeddingStore.add(embedding1, segment1);
@@ -56,6 +60,7 @@ public class QdrantEmbeddingStoreExample {
       Embedding embedding2 = embeddingModel.embed(segment2).content();
       embeddingStore.add(embedding2, segment2);
 
+      // 查询问题转成 embedding 后，按 cosine 相似度返回最相关文本。
       Embedding queryEmbedding = embeddingModel.embed("Did you ever travel abroad?").content();
       EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
               .queryEmbedding(queryEmbedding)

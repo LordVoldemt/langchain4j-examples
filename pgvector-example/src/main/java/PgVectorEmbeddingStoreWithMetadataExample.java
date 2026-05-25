@@ -21,10 +21,12 @@ public class PgVectorEmbeddingStoreWithMetadataExample {
 
         DockerImageName dockerImageName = DockerImageName.parse("pgvector/pgvector:pg16");
         try (PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(dockerImageName)) {
+            // 使用 Testcontainers 启动带 pgvector 扩展的临时 PostgreSQL。
             postgreSQLContainer.start();
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 建立向量表，metadata 会随 TextSegment 存储，后续可用于过滤。
             EmbeddingStore<TextSegment> embeddingStore = PgVectorEmbeddingStore.builder()
                     .host(postgreSQLContainer.getHost())
                     .port(postgreSQLContainer.getFirstMappedPort())
@@ -35,6 +37,7 @@ public class PgVectorEmbeddingStoreWithMetadataExample {
                     .dimension(embeddingModel.dimension())
                     .build();
 
+            // 两条文本使用不同 userId，便于演示 metadata 过滤后的相似度检索。
             TextSegment segment1 = TextSegment.from("I like football.", Metadata.metadata("userId", "1"));
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -45,7 +48,7 @@ public class PgVectorEmbeddingStoreWithMetadataExample {
 
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
 
-            // search for user 1
+            // 只检索 userId=1 的向量记录。
 
             Filter onlyForUser1 = metadataKey("userId").isEqualTo("1");
 
@@ -60,7 +63,7 @@ public class PgVectorEmbeddingStoreWithMetadataExample {
             System.out.println(embeddingMatch1.score());
             System.out.println(embeddingMatch1.embedded().text());
 
-            // search for user 2
+            // 同一个查询向量配合 userId=2 过滤，返回另一个用户的相关内容。
 
             Filter onlyForUser2 = metadataKey("userId").isEqualTo("2");
 

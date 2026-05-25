@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Bean;
 
 /**
  * NOTE:
- * This example assumes we have a Neo4j instance with Bolt URI bolt://localhost:7687, username 'neo4j' and password 'pass1234'
- * as specified in the application.properties.
- * If needed, change the properties values to address a running instance.
+ * 本示例假设已有 Neo4j 实例，连接信息在 application.properties 中配置：
+ * bolt://localhost:7687，用户名 neo4j，密码 pass1234。
+ * 如需连接其他外部 Neo4j 服务，请修改配置文件，不要在代码中写入真实凭据。
  * 
- * To add an embedding
+ * 添加一条 embedding：
  * curl -X POST localhost:8083/api/embeddings/add -H "Content-Type: text/plain" -d "embeddingTest"
  * 
- * To search embeddings
+ * 搜索相似 embedding：
  * curl -X POST localhost:8083/api/embeddings/search -H "Content-Type: text/plain" -d "querySearchTest"
  */
 @SpringBootApplication
@@ -26,6 +26,7 @@ public class SpringBootExample {
 
     @Bean
     public AllMiniLmL6V2EmbeddingModel embeddingModel() {
+        // Spring 容器复用同一个 embedding 模型，Controller 写入和查询时保持向量维度一致。
         return new AllMiniLmL6V2EmbeddingModel();
     }
     

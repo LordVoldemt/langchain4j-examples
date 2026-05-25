@@ -47,6 +47,8 @@ public class DbPediaSparqlExample {
      */
     private String extractAbstractSparqlQuery(String subject) {
         // Using StringBuilder to build the SPARQL query string
+        // 这里把模型抽取出的实体名拼进 DBpedia 资源 URI，再查询英文 abstract。
+        // 新手要注意：生产代码应进一步校验/转义 subject，避免生成非法 SPARQL。
         StringBuilder queryString = new StringBuilder()
             .append("PREFIX dbo: <http://dbpedia.org/ontology/> \n")
             .append("PREFIX dbr: <http://dbpedia.org/resource/> \n")
@@ -70,6 +72,7 @@ public class DbPediaSparqlExample {
         // Creating a SPARQL query object
         Query query = QueryFactory.create(queryString);
         // Using try-with-resources to ensure that QueryExecution is closed after use
+        // DBpedia 是远程知识库，查询失败可能来自网络、限流或 SPARQL 语法错误，所以这里统一捕获并记录。
         try (QueryExecution qexec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query)) {
             // Executing the query and getting the results
             ResultSet results = qexec.execSelect();
@@ -127,14 +130,17 @@ public class DbPediaSparqlExample {
         String question = "How many years did Napoleon live?";
 
         // Extracting the subject of the question using the Azure OpenAI model
+        // 第一次模型调用只做实体抽取，把自然语言问题变成 DBpedia 可查询的 subject。
         String theSubject = extractSubject(model, question);
         logger.info("Identified subject: " + theSubject);
 
         // Retrieving the abstract for the extracted subject from DBpedia
+        // 知识库查询结果作为事实依据，后续回答不再完全依赖模型内部知识。
         String theAbstract = dbpedia.executeSparqlQuery(dbpedia.extractAbstractSparqlQuery(theSubject));
         logger.info("Abstract for the subject: " + theAbstract);
 
         // Generating an answer to the question based on the abstract and the subject
+        // 第二次模型调用负责把结构化/半结构化查询结果转成自然语言答案。
         String theAnswer = generateAnswer(model, theSubject, theAbstract, question);
         logger.info("Answer to the question: " + theAnswer);
         logger.info("Done!");

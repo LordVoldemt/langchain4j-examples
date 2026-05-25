@@ -14,6 +14,7 @@ public class VoyageAiScoringModelExample {
     @Test
     void should_score_single_text() {
 
+        // Scoring/rerank 模型用于给 query 与文本片段的相关性打分，不生成聊天回答。
         ScoringModel model = VoyageAiScoringModel.builder()
                 .apiKey(System.getenv("VOYAGE_API_KEY"))
                 .modelName(RERANK_LITE_1)

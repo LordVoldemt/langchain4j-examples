@@ -26,6 +26,7 @@ public class GeminiChatModelResource {
 
     @PostConstruct
     public void init() {
+        // 生命周期回调中创建模型客户端，避免每个请求都重复构建。
         chatModel = GoogleAiGeminiChatModel.builder()
                 .apiKey(geminiApiKey)
                 .modelName(modelName)
@@ -37,6 +38,7 @@ public class GeminiChatModelResource {
     @Path("chat")
     @Produces(MediaType.TEXT_PLAIN)
     public String chat(@QueryParam("message") @DefaultValue("Tell me a joke about programming.") String message) {
+        // Resource 负责 HTTP 边界，chatModel 负责和 Gemini 兼容模型服务通信。
         return chatModel.chat(message);
     }
 }

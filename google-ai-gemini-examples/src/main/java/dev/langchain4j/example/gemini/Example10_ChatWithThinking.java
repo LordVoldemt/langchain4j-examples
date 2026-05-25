@@ -44,7 +44,7 @@ public class Example10_ChatWithThinking {
 
         ChatResponse response = model.chat(UserMessage.from(problem));
 
-        // Display thinking process if available
+        // 如果模型返回了 thinking 字段，这里单独打印，便于调试复杂推理任务。
         if (response.aiMessage().thinking() != null) {
             System.out.println("=== Thinking Process ===");
             System.out.println(response.aiMessage().thinking());

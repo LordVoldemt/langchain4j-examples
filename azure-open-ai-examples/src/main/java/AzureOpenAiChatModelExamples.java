@@ -6,6 +6,7 @@ public class AzureOpenAiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // Azure OpenAI 使用 endpoint + deploymentName 定位资源；deploymentName 是你在 Azure 门户中部署模型时起的名称。
             AzureOpenAiChatModel model = AzureOpenAiChatModel.builder()
                     .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))

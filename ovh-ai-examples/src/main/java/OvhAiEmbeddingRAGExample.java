@@ -26,6 +26,7 @@ public class OvhAiEmbeddingRAGExample {
         DocumentSplitter splitter = DocumentSplitters.recursive(200, 0);
         List<TextSegment> segments = splitter.split(document);
 
+        // RAG 流程中，文档片段和用户问题都用同一个 OVH embedding 模型映射到同一向量空间。
         EmbeddingModel embeddingModel = OvhAiEmbeddingModel.builder()
                 .apiKey(System.getenv("OVH_AI_API_KEY"))
                 .build();
@@ -35,6 +36,7 @@ public class OvhAiEmbeddingRAGExample {
             embeddingStore.add(embeddingModel.embed(segment).content(), segment);
         }
         String question = "Charlie";
+        // 将问题转成向量后，再到 embedding store 中检索最相关的文档片段。
         Embedding questionEmbedding = embeddingModel.embed(question).content();
 
         int maxResults = 3;

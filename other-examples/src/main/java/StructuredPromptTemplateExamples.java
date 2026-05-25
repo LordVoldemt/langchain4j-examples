@@ -11,6 +11,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.time.Duration.ofSeconds;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个示例学习 @StructuredPrompt：用 Java 对象承载 prompt 变量，再生成最终 Prompt。
+ * 当 prompt 参数较多时，这种方式比 Map 更容易维护和复用。
+ */
 public class StructuredPromptTemplateExamples {
 
     static ChatModel model = OpenAiChatModel.builder()
@@ -33,6 +37,7 @@ public class StructuredPromptTemplateExamples {
             CreateRecipePrompt createRecipePrompt = new CreateRecipePrompt();
             createRecipePrompt.dish = "salad";
             createRecipePrompt.ingredients = asList("cucumber", "tomato", "feta", "onion", "olives");
+            // StructuredPromptProcessor 会读取对象字段，把它们填入 @StructuredPrompt 的占位符。
             Prompt prompt = StructuredPromptProcessor.toPrompt(createRecipePrompt);
 
             AiMessage aiMessage = model.chat(prompt.toUserMessage()).aiMessage();

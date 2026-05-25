@@ -11,12 +11,12 @@ import dev.langchain4j.store.embedding.vespa.VespaEmbeddingStore;
 import java.util.List;
 
 /**
- * Example of integration with Vespa. You need to configure Vespa server side first, instructions are
- * inside of README.md file.
+ * Vespa 集成示例。运行前需要先按 README.md 配置 Vespa 服务端 schema 和访问凭据。
  */
 public class VespaEmbeddingStoreExample {
 
   public static void main(String[] args) {
+    // Vespa 示例依赖外部服务，这里的 url/keyPath/certPath 需要替换为自己的服务地址和证书路径。
     EmbeddingStore<TextSegment> embeddingStore = VespaEmbeddingStore
       .builder()
       // server url, e.g. https://alexey-heezer.langchain4j.mytenant346.aws-us-east-1c.dev.z.vespa-app.cloud
@@ -31,6 +31,7 @@ public class VespaEmbeddingStoreExample {
 
     EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+    // 单条 add 写入文本和 embedding，Vespa 根据服务端 schema 保存向量字段。
     TextSegment segment1 = TextSegment.from("I like football.");
     Embedding embedding1 = embeddingModel.embed(segment1).content();
     embeddingStore.add(embedding1, segment1);
@@ -45,6 +46,7 @@ public class VespaEmbeddingStoreExample {
     Embedding embedding3 = embeddingModel.embed(segment3).content();
     embeddingStore.add(embedding3, segment3);
 
+    // addAll 演示批量写入多条向量记录。
     List<String> ids = embeddingStore.addAll(
       asList(embedding1, embedding2, embedding3),
       asList(segment1, segment2, segment3)
@@ -60,6 +62,7 @@ public class VespaEmbeddingStoreExample {
 
     System.out.println("segment 4 id: " + s4id);
 
+    // sport 查询返回前 2 个相似片段，展示 maxResults 对返回数量的限制。
     Embedding queryEmbedding = embeddingModel.embed(
       "What is your favorite sport?"
     ).content();
@@ -78,6 +81,7 @@ public class VespaEmbeddingStoreExample {
     System.out.println(matches.get(1).score()); // 0.232...
     System.out.println(matches.get(1).embedded().text()); // swimming pool
 
+    // music 查询增加 minScore，只保留相似度达到阈值的结果。
     queryEmbedding = embeddingModel.embed("And what about musicians?").content();
     embeddingSearchRequest = EmbeddingSearchRequest.builder()
             .queryEmbedding(queryEmbedding)

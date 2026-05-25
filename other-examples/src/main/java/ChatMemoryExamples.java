@@ -8,6 +8,10 @@ import dev.langchain4j.model.openai.OpenAiTokenCountEstimator;
 import static dev.langchain4j.data.message.UserMessage.userMessage;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
+/**
+ * 这个示例学习低层 ChatMemory：由你决定哪些消息进入上下文，再把消息列表交给模型。
+ * 如果只想快速做多轮对话，可以先看 AI Services 版本；这里更适合理解记忆的底层机制。
+ */
 public class ChatMemoryExamples {
 
     /**
@@ -17,6 +21,7 @@ public class ChatMemoryExamples {
 
     public static void main(String[] args) {
 
+        // TokenWindowChatMemory 会按 token 上限裁剪历史，避免上下文超过模型限制。
         ChatMemory chatMemory = TokenWindowChatMemory.withMaxTokens(300, new OpenAiTokenCountEstimator(GPT_4_O_MINI));
 
         ChatModel model = OpenAiChatModel.builder()

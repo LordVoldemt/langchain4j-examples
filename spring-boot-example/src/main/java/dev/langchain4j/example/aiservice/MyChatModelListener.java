@@ -11,6 +11,8 @@ public class MyChatModelListener implements ChatModelListener {
 
     private static final Logger log = LoggerFactory.getLogger(MyChatModelListener.class);
 
+    // 这些回调展示了模型调用的生命周期：发送请求、收到响应、发生异常。
+    // 新手可以把它理解为 AI 调用链路上的日志拦截器。
     @Override
     public void onRequest(ChatModelRequestContext requestContext) {
         log.info("onRequest(): {}", requestContext.chatRequest());

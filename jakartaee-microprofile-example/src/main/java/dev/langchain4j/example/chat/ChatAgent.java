@@ -45,6 +45,7 @@ public class ChatAgent {
 
     private Assistant assistant = null;
 
+    // AiServices.builder 把普通 Java 接口变成代理对象，并把模型、记忆策略组装进去。
     public Assistant getAssistant() {
         if (assistant == null) {
             HuggingFaceChatModel model = HuggingFaceChatModel.builder()
@@ -65,6 +66,7 @@ public class ChatAgent {
     }
 
     public String chat(String sessionId, String message) {
+        // sessionId 会传给 @MemoryId 参数，LangChain4j 据此找到对应窗口记忆。
         String reply = getAssistant().chat(sessionId, message).trim();
         int i = reply.lastIndexOf(message);
         return i > 0 ? reply.substring(i) : reply;

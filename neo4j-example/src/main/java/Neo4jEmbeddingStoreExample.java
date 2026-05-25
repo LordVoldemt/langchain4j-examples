@@ -18,7 +18,9 @@ public class Neo4jEmbeddingStoreExample {
     
     public static void main(String[] args) {
         try (Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5.26")) {
+            // Testcontainers 启动临时 Neo4j，示例使用容器生成的 Bolt 地址和管理员密码。
             neo4j.start();
+            // 默认配置会在 Neo4j 中创建向量索引和节点属性，dimension 与模型输出维度保持一致。
             minimalEmbedding = Neo4jEmbeddingStore.builder()
                     .withBasicAuth(neo4j.getBoltUrl(), "neo4j", neo4j.getAdminPassword())
                     .dimension(embeddingModel.dimension())
@@ -28,7 +30,7 @@ public class Neo4jEmbeddingStoreExample {
             searchEmbeddingsWithAddAllAndSingleMaxResult();
             searchEmbeddingsWithAddAllWithMetadataMaxResultsAndMinScore();
             
-            // custom embeddingStore
+            // 自定义索引名、标签和属性名，适合接入已有 Neo4j 数据模型。
             Neo4jEmbeddingStore customEmbeddingStore = Neo4jEmbeddingStore.builder()
                     .withBasicAuth(neo4j.getBoltUrl(), "neo4j", neo4j.getAdminPassword())
                     .dimension(embeddingModel.dimension())
@@ -44,6 +46,7 @@ public class Neo4jEmbeddingStoreExample {
 
     private static void searchEmbeddingsWithSingleMaxResult(EmbeddingStore<TextSegment> minimalEmbedding) {
         
+        // 单条 add 写入文本和 embedding，Neo4j 会将向量保存到节点属性中。
         TextSegment segment1 = TextSegment.from("I like football.");
         Embedding embedding1 = embeddingModel.embed(segment1).content();
         minimalEmbedding.add(embedding1, segment1);
@@ -52,6 +55,7 @@ public class Neo4jEmbeddingStoreExample {
         Embedding embedding2 = embeddingModel.embed(segment2).content();
         minimalEmbedding.add(embedding2, segment2);
 
+        // maxResults=1 表示只返回与查询向量最相近的一条节点文本。
         Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
         final EmbeddingSearchRequest request = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)
@@ -66,6 +70,7 @@ public class Neo4jEmbeddingStoreExample {
     
     private static void searchEmbeddingsWithAddAllAndSingleMaxResult() {
         
+        // addAll 演示批量写入多个 embedding 和对应文本，减少多次单条写入的样板代码。
         TextSegment segment1 = TextSegment.from("I like football.");
         Embedding embedding1 = embeddingModel.embed(segment1).content();
 
@@ -95,6 +100,7 @@ public class Neo4jEmbeddingStoreExample {
 
     private static void searchEmbeddingsWithAddAllWithMetadataMaxResultsAndMinScore() {
         
+        // metadata 会随 TextSegment 一起保存，minScore 用于过滤相似度过低的结果。
         TextSegment segment1 = TextSegment.from("I like football.", Metadata.from("test-key-1", "test-value-1"));
         Embedding embedding1 = embeddingModel.embed(segment1).content();
 

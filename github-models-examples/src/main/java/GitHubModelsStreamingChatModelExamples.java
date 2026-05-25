@@ -12,6 +12,7 @@ public class GitHubModelsStreamingChatModelExamples {
 
         public static void main(String[] args) {
 
+            // 流式 GitHub Models 示例通过回调逐段消费模型输出，便于实时展示。
             GitHubModelsStreamingChatModel model = GitHubModelsStreamingChatModel.builder()
                     .gitHubToken(System.getenv("GITHUB_TOKEN"))
                     .modelName(GPT_4_O_MINI)

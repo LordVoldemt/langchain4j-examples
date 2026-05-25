@@ -10,6 +10,7 @@ public class GitHubModelsEmbeddingModelExamples {
 
         public static void main(String[] args) {
 
+            // GitHub Models 的 embedding 也需要选择 embedding 模型，返回向量可用于语义搜索。
             GitHubModelsEmbeddingModel model = GitHubModelsEmbeddingModel.builder()
                     .gitHubToken(System.getenv("GITHUB_TOKEN"))
                     .modelName(TEXT_EMBEDDING_3_SMALL)

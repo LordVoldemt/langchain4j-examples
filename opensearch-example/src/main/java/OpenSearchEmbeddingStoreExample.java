@@ -16,13 +16,16 @@ public class OpenSearchEmbeddingStoreExample {
     public static void main(String[] args) throws InterruptedException {
 
         try (var opensearch = new OpensearchContainer(DockerImageName.parse("opensearchproject/opensearch:2.0.0"))) {
+            // Testcontainers 启动临时 OpenSearch 节点，示例不依赖外部集群。
             opensearch.start();
+            // serverUrl 指向容器暴露的 HTTP 地址，EmbeddingStore 负责创建/使用默认向量索引。
             EmbeddingStore<TextSegment> embeddingStore = OpenSearchEmbeddingStore.builder()
                     .serverUrl(opensearch.getHttpHostAddress())
                     .build();
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 写入文本及其 embedding，后续可通过向量相似度找回原始 TextSegment。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -31,8 +34,9 @@ public class OpenSearchEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
-            Thread.sleep(1000); // to be sure that embeddings were persisted
+            Thread.sleep(1000); // 等待 OpenSearch 完成写入和索引刷新，确保搜索能看到新向量。
 
+            // 查询文本生成 embedding 后，返回最相近的一条向量记录。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                     .queryEmbedding(queryEmbedding)

@@ -42,6 +42,7 @@ public class ImportmapResource {
         this.importmap = aggregator.aggregateAsJson();
     }
 
+    // JavaScript 版本用于兼容当前浏览器对动态 import map 支持不完整的情况。
     private static final String JAVASCRIPT_CODE = """
             const im = document.createElement('script');
             im.type = 'importmap';

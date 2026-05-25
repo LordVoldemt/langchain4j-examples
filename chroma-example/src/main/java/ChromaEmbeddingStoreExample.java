@@ -16,8 +16,10 @@ public class ChromaEmbeddingStoreExample {
 
     public static void main(String[] args) {
         try (ChromaDBContainer chroma = new ChromaDBContainer("chromadb/chroma:1.1.0").withExposedPorts(8000)) {
+            // 使用 Testcontainers 启动临时 Chroma 服务，示例结束后容器会随 try-with-resources 释放。
             chroma.start();
 
+            // collectionName 使用随机值，避免多次运行示例时复用旧集合中的向量数据。
             EmbeddingStore<TextSegment> embeddingStore = ChromaEmbeddingStore.builder()
                 .apiVersion(V2)
                 .baseUrl(chroma.getEndpoint())
@@ -28,6 +30,7 @@ public class ChromaEmbeddingStoreExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 将原始文本转换成 embedding 后写入 Chroma；TextSegment 会作为命中结果中的原文返回。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -36,6 +39,7 @@ public class ChromaEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
+            // 查询文本同样先向量化，再按向量相似度检索最相关的一条记录。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                     .queryEmbedding(queryEmbedding)

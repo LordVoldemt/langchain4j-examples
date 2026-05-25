@@ -1,3 +1,4 @@
+// 中文说明：Agentic 教程相关代码，用来演示多 Agent 工作流、状态传递或教学辅助工具。
 package _9_human_in_the_loop;
 
 import dev.langchain4j.service.SystemMessage;

@@ -36,6 +36,8 @@ public class McpToolsExampleOverHttp {
                 .logResponses(true)
                 .build();
 
+        // HTTP/SSE 模式适合 MCP server 已经作为独立服务运行的场景；
+        // 客户端连接到 /sse 后接收服务端事件，并通过 HTTP 完成工具调用通信。
         McpTransport transport = new HttpMcpTransport.Builder()
                 .sseUrl("http://localhost:3001/sse")
                 .timeout(Duration.ofSeconds(60))
@@ -47,6 +49,7 @@ public class McpToolsExampleOverHttp {
                 .transport(transport)
                 .build();
 
+        // 这一步把远程 MCP 工具接入 AiServices，之后模型可以像调用本地 @Tool 一样选择它们。
         ToolProvider toolProvider = McpToolProvider.builder()
                 .mcpClients(List.of(mcpClient))
                 .build();

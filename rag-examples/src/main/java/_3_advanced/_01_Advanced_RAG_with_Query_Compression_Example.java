@@ -26,6 +26,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个高级示例学习 query compression，把依赖上下文的追问改写成独立查询。
+ * 它会额外调用一次模型来改写查询，因此检索质量通常更好，但延迟和成本也会增加。
+ */
 public class _01_Advanced_RAG_with_Query_Compression_Example {
 
     /**
@@ -88,6 +92,7 @@ public class _01_Advanced_RAG_with_Query_Compression_Example {
         // We will create a CompressingQueryTransformer, which is responsible for compressing
         // the user's query and the preceding conversation into a single, stand-alone query.
         // This should significantly improve the quality of the retrieval process.
+        // QueryTransformer 发生在检索前，用来把用户原始问题转换成更适合检索的查询。
         QueryTransformer queryTransformer = new CompressingQueryTransformer(chatModel);
 
         ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
@@ -100,6 +105,7 @@ public class _01_Advanced_RAG_with_Query_Compression_Example {
         // The RetrievalAugmentor serves as the entry point into the RAG flow in LangChain4j.
         // It can be configured to customize the RAG behavior according to your requirements.
         // In subsequent examples, we will explore more customizations.
+        // RetrievalAugmentor 是高级 RAG 的编排入口，可组合查询转换、路由、聚合等步骤。
         RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()
                 .queryTransformer(queryTransformer)
                 .contentRetriever(contentRetriever)

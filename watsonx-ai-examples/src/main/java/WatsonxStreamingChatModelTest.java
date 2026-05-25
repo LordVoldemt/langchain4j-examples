@@ -11,9 +11,10 @@ class WatsonxStreamingChatModelTest {
 
         try {
 
-        StreamingChatModel model = WatsonxStreamingChatModel.builder()
-            .baseUrl(System.getenv("WATSONX_URL"))
-            .apiKey(System.getenv("WATSONX_API_KEY"))
+            // streaming 模型会通过回调逐段返回内容，适合实时 UI 或控制台输出。
+            StreamingChatModel model = WatsonxStreamingChatModel.builder()
+                .baseUrl(System.getenv("WATSONX_URL"))
+                .apiKey(System.getenv("WATSONX_API_KEY"))
             .projectId(System.getenv("WATSONX_PROJECT_ID"))
             .modelName("ibm/granite-4-h-small")
             .build();

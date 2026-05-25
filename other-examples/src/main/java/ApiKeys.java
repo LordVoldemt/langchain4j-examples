@@ -1,5 +1,9 @@
 import static dev.langchain4j.internal.Utils.getOrDefault;
 
+/**
+ * 这些通用示例统一从环境变量读取密钥，方便本地运行时替换不同服务。
+ * 请不要把真实 API key/token 写进示例代码；没有配置时只有少数 demo 场景能运行。
+ */
 public class ApiKeys {
 
     // You can use "demo" api key for demonstration purposes.

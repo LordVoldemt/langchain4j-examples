@@ -1,181 +1,31 @@
-# Build Native Java Images with GraalVM with Langchain4J and Gemini Function Calling
+# 原生 Java Gemini 函数调用示例
 
-Demonstrate `Function Calling` code using Gemini with Langchain4j
+## 模块定位
 
-__Use Case__: Suppose we want the AI model to respond with information that it does not have.
-For example the status of your recent payment transactions.
-Users can ask questions about current status for certain payment transactions and use function calling to answer them.
+演示不依赖完整框架时，如何在 Java 中使用 Gemini function calling，并和 LangChain4j 思路对照。
 
-__Environment__:
-Please set the following environment variables before running this example:
-```shell
-export VERTEX_AI_GEMINI_PROJECT_ID=<your project id>
-export VERTEX_AI_GEMINI_LOCATION=<region, ex us-central1>
-export VERTEX_AI_GEMINI_MODEL=<the model in use, ex.gemini-1.5-flash-001>
-```
+## 你可以学到什么
 
-For example, let's consider a sample dataset and a function that retrieves the payment status given a transaction:
+- Gemini 函数调用基础
+- 工具 schema 与 Java 方法之间的关系
+- 原生 Java 调用方式
+- 和 LangChain4j 工具调用抽象的区别
 
-```java
-    record Transaction(String id) {
-    }
-    
-    record Status(String name) {
-    }
-    
-    private static final Map<Transaction, Status> DATASET = Map.of(
-            new Transaction("001"), new Status("pending"),
-            new Transaction("002"), new Status("approved"),
-            new Transaction("003"), new Status("rejected"));
-    
-    @Tool("Get the status of a payment transaction")
-    public Status paymentStatus(@P("The id of the payment transaction") String transaction) {
-        System.out.println();
-        return DATASET.get(new Transaction(transaction));
-    }
-```
+## 建议先看这些代码
 
-Function is registered as `@Tool`, which are Java methods the language model can use to call. 
-Langchain4j greatly simplifies code you need to write to support function invocation.
-It brokers the function invocation conversation for you.
+- `Langchain4JFunctionCallingApplication.java`：应用入口和核心示例
 
-Lets add the boot starters for 4 AI Models that support function calling:
+## 运行前准备
 
-```xml
-<dependency>
-    <groupId>dev.langchain4j</groupId>
-    <artifactId>langchain4j-spring-boot-starter</artifactId>
-    <version>${langchain4j.version}</version>
-</dependency>
-<dependency>
-    <groupId>dev.langchain4j</groupId>
-    <artifactId>langchain4j-vertex-ai-gemini</artifactId>
-    <version>${langchain4j.version}</version>
-</dependency>
-<dependency>
-    <groupId>dev.langchain4j</groupId>
-    <artifactId>langchain4j</artifactId>
-    <version>${langchain4j.version}</version>
-</dependency>
-```
+需要 Gemini API key，通常通过 GOOGLE_AI_GEMINI_API_KEY 配置。
 
-and configure them in `application.properties`:
+## 学习建议
 
-```
-# Google VertexAI Gemini
-langchain4j.gemini.project-id=${VERTEX_AI_GEMINI_PROJECT_ID}
-langchain4j.gemini.location=${VERTEX_AI_GEMINI_LOCATION}
-langchain4j.gemini.chat.options.model=${VERTEX_AI_GEMINI_MODEL}
-```
+适合已经看过 google-ai-gemini-examples 中工具调用示例后继续对比。
 
-Now you can test them with the same prompt:
+## 常见改造方向
 
-```java
-@Bean
-ApplicationRunner applicationRunner() {
-  return args -> {
-    String userMessage = """
-        Please use multi-turn conversation to answer the following questions:
-        What is the status of my payment transactions 002, 001, 003?
-        Please indicate the status for each transaction and return the results in JSON format.
-        """;
-
-    // test with VertexAI Gemini using REST API
-    functionCallGeminiWithREST(userMessage);
-
-    // test with VertexAI Gemini using gRPC
-    functionCallGeminiWithGRPC(userMessage);
-  };
-}
-```
-
-The output would look something like:
-
-```text
-    What is the status of my payment transactions 002, 001, 003?
-    Please indicate the status for each transaction and return the results in JSON format.
-    ```json
-    {
-        "002": "approved",
-        "001": "pending",
-        "003": "rejected"
-    }
-    ```
-```
-
-## Related [Langchain4J](https://docs.langchain4j.dev/) documentation:
-* [Langchain4J Google VertexAI Gemini](https://docs.langchain4j.dev/integrations/language-models/google-gemini) and [Function Calling](https://docs.langchain4j.dev/tutorials/tools)
-
-## JIT Java Build
-You can build this as a regular Java archive.
-
-```shell
-./mvnw clean package -DskipTests
-```
-
-Run the Java archive:
-
-```shell
-java -jar target/native-java-gemini-function-calling-example-1.0.0.jar
-
-# or
-
-./mvnw spring-boot:run
-```
-## Native Java (GraalVM) Build
-You can build this as a native executable.
-
-First make sure that you are using GraalVM 21 JDK. For example, install the GraalVM 21 SDK with [SDKMan](https://sdkman.io/install) or from the [GraalVM site](https://www.graalvm.org/downloads/)
-
-```shell
-java -version
-
-# output
-java version "21.0.3" 2024-04-16 LTS
-Java(TM) SE Runtime Environment Oracle GraalVM 21.0.3+7.1 (build 21.0.3+7-LTS-jvmci-23.1-b37)
-Java HotSpot(TM) 64-Bit Server VM Oracle GraalVM 21.0.3+7.1 (build 21.0.3+7-LTS-jvmci-23.1-b37, mixed mode, sharing)
-```
-
-Then build:
-
-```
-./mvnw clean package -Pnative native:compile -DskipTests
-```
-
-Run the native executable:
-
-```
-./target/langchain4j-function-calling 
-```
-
-
-__Important note__: Please register runtime hints for the Native Java image
-* Register the Assistant class for reflection and dynamic proxy generation
-* Register the FunctionCallingService class for reflection
-* Register the paymentStatus() method for invocation - full reflection support is required, including the ability to invoke
-```java
-public static class FunctionCallingRuntimeHints implements RuntimeHintsRegistrar {
-  @Override
-  public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-    try {
-      // Register all the classes and methods that are used through reflection
-      // or dynamic proxy generation in LangChain4j, especially those
-      // related to function calling.
-      // Register method for reflection
-      var mcs = MemberCategory.values();
-      hints.reflection().registerType(Langchain4JFunctionCallingApplication.Assistant.class, mcs);
-      hints.proxies().registerJdkProxy(Langchain4JFunctionCallingApplication.Assistant.class);
-      hints.reflection().registerType(FunctionCallingService.class, mcs);
-
-      hints.reflection().registerMethod(
-          FunctionCallingService.class.getMethod("paymentStatus", String.class),
-          ExecutableMode.INVOKE
-      );
-
-      // ... register other necessary classes and methods ...
-    } catch (NoSuchMethodException e) {
-      // Handle the exception appropriately (e.g., log it)
-        System.out.println("Error: " + e.getMessage());
-    }
-  }
-```
+- 把示例中的模型配置改成你正在使用的模型服务。
+- 把硬编码的示例输入改成命令行参数、HTTP 参数或配置文件。
+- 如果示例使用外部数据库或向量库，先用最小数据集跑通写入和检索流程。
+- 跑通后再加入日志、异常处理和更贴近业务的 prompt。

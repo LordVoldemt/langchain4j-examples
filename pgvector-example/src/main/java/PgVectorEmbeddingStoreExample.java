@@ -17,10 +17,12 @@ public class PgVectorEmbeddingStoreExample {
 
         DockerImageName dockerImageName = DockerImageName.parse("pgvector/pgvector:pg16");
         try (PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(dockerImageName)) {
+            // 使用带 pgvector 扩展的 PostgreSQL 容器，示例无需依赖本机数据库。
             postgreSQLContainer.start();
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // table 指定保存 embedding 和文本的表，dimension 必须与模型输出维度一致。
             EmbeddingStore<TextSegment> embeddingStore = PgVectorEmbeddingStore.builder()
                     .host(postgreSQLContainer.getHost())
                     .port(postgreSQLContainer.getFirstMappedPort())
@@ -31,6 +33,7 @@ public class PgVectorEmbeddingStoreExample {
                     .dimension(embeddingModel.dimension())
                     .build();
 
+            // 将文本转为向量并写入 pgvector 表。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -39,6 +42,7 @@ public class PgVectorEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
+            // 查询文本向量化后，在 pgvector 中执行相似度搜索。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
 
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()

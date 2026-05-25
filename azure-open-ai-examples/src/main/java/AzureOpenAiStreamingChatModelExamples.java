@@ -10,6 +10,7 @@ public class AzureOpenAiStreamingChatModelExamples {
 
         public static void main(String[] args) {
 
+            // 流式模型会持续触发 onPartialResponse，适合把 token 实时推给前端或控制台。
             AzureOpenAiStreamingChatModel model = AzureOpenAiStreamingChatModel.builder()
                     .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))

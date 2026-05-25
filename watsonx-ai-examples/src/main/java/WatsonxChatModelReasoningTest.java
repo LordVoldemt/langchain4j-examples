@@ -12,6 +12,7 @@ class WatsonxChatModelReasoningTest {
 
         try {
             
+            // thinking 配置用于从带思考标签的模型响应中提取推理和最终回答。
             ChatModel chatModel = WatsonxChatModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

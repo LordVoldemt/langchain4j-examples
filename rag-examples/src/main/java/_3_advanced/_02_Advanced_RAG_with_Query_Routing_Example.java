@@ -33,6 +33,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习 query routing，让不同问题路由到不同知识源。
+ * 当数据源很多时，不必每次都查全部 retriever；路由能降低成本并减少无关上下文。
+ */
 public class _02_Advanced_RAG_with_Query_Routing_Example {
 
     /**
@@ -105,6 +109,7 @@ public class _02_Advanced_RAG_with_Query_Routing_Example {
         Map<ContentRetriever, String> retrieverToDescription = new HashMap<>();
         retrieverToDescription.put(biographyContentRetriever, "biography of John Doe");
         retrieverToDescription.put(termsOfUseContentRetriever, "terms of use of car rental company");
+        // LanguageModelQueryRouter 会根据描述让模型判断该查哪个 retriever，描述越清楚路由越稳定。
         QueryRouter queryRouter = new LanguageModelQueryRouter(chatModel, retrieverToDescription);
 
         RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()

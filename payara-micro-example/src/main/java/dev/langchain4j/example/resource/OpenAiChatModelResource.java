@@ -26,6 +26,7 @@ public class OpenAiChatModelResource {
 
     @PostConstruct
     public void init() {
+        // @PostConstruct 在依赖注入完成后执行，适合把配置中的 key/modelName 组装成可复用模型客户端。
         chatModel = OpenAiChatModel.builder()
                 .apiKey(openAiApiKey)
                 .modelName(modelName)
@@ -36,6 +37,7 @@ public class OpenAiChatModelResource {
     @Path("chat")
     @Produces(MediaType.TEXT_PLAIN)
     public String chat(@QueryParam("message") @DefaultValue("What is the current time?") String message) {
+        // JAX-RS 把 query 参数传进来，这一行就是普通 Web 应用进入 AI 模型调用的位置。
         return chatModel.chat(message);
     }
 

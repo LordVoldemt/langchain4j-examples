@@ -37,6 +37,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习何时跳过检索，例如打招呼或闲聊时不需要查知识库。
+ * 跳过检索可以省成本、降低延迟，也能避免无关文档干扰模型回答。
+ */
 public class _06_Advanced_RAG_Skip_Retrieval_Example {
 
 
@@ -93,6 +97,7 @@ public class _06_Advanced_RAG_Skip_Retrieval_Example {
                 .build();
 
         // Let's create a query router.
+        // 自定义 QueryRouter 返回空集合时，DefaultRetrievalAugmentor 就不会调用任何 retriever。
         QueryRouter queryRouter = new QueryRouter() {
 
             private final PromptTemplate PROMPT_TEMPLATE = PromptTemplate.from(

@@ -42,6 +42,7 @@ public class ModelResource {
     private HuggingFaceLanguageModel languageModel = null;
     private HuggingFaceEmbeddingModel embeddingModel = null;
 
+    // 示例采用懒加载：第一次请求到来时才创建模型客户端，后续请求复用同一个实例。
     private HuggingFaceLanguageModel getLanguageModel() {
         if (languageModel == null) {
             languageModel = HuggingFaceLanguageModel.builder()
@@ -79,6 +80,7 @@ public class ModelResource {
 
         HuggingFaceLanguageModel model = getLanguageModel();
 
+        // 低层 LanguageModel 示例：把字符串直接发给模型，返回一次性生成的文本。
         String answer;
         try {
             answer = model.generate(question).content();
@@ -100,6 +102,7 @@ public class ModelResource {
             operationId = "chatModelAsk")
     public List<String> chatModelAsk(@QueryParam("userMessage") String userMessage) {
 
+        // ChatModel 示例：用 SystemMessage 固定助手角色，再把用户消息作为一轮对话发送。
         HuggingFaceChatModel model = HuggingFaceChatModel.builder()
                 .accessToken(HUGGING_FACE_API_KEY)
                 .modelId(LANGUAGE_MODEL_ID)
@@ -141,6 +144,7 @@ public class ModelResource {
 
         HuggingFaceEmbeddingModel model = getEmbeddingModel();
 
+        // Embedding 示例：把文本变成向量后计算相似度，这是 RAG 检索的基础步骤。
         List<TextSegment> textSegments = List.of(textSegment(text1), textSegment(text2));
         List<Embedding> embeddings = model.embedAll(textSegments).content();
         double similarity = between(embeddings.get(0), embeddings.get(1));

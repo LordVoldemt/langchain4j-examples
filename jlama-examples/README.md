@@ -1,33 +1,35 @@
-# Build AI Applications with Jlama and LangChain4j
+# Jlama 本地推理示例
 
-[Jlama](https://github.com/tjake/Jlama) is a fast modern Java library for running many LLMs.
+## 模块定位
 
-Jlama is built on Java 20+ and utilizes the [Panama Vector API](https://openjdk.org/jeps/448) for fast inference.
+演示 Jlama 与 LangChain4j 的集成，用 Java 本地运行大模型能力。
 
-### Jlama with LangChain4j
+## 你可以学到什么
 
-To run the examples you must have java 20+ installed and run the following commands:
+- Jlama 基础聊天
+- Jlama 流式输出
+- 本地 RAG 示例
+- 函数调用
+- Java 本地推理的 JVM 参数要求
 
-```shell
-cd jlama-examples
+## 建议先看这些代码
 
-# Build and run basic chat response example
-./mvnw compile exec:exec@chat
+- `JlamaChatModelExamples.java`：聊天模型
+- `JlamaStreamingChatModelExamples.java`：流式输出
+- `JlamaBasicRagEmbedExamples.java`：RAG 示例
+- `JlamaAiFunctionCallingExamples.java`：函数调用
 
-# Build and run streaming example
-./mvnw compile exec:exec@stream
+## 运行前准备
 
-# Build and run Rag example
-./mvnw compile exec:exec@rag
+通常需要 Java 20+，并添加 Vector API / native access / preview 等 JVM 参数。具体请看原模块说明。
 
-# Build and run function calling example
-./mvnw compile exec:exec@functions
-```
+## 学习建议
 
-To use Jlama with your LangChain4j app you must use Java 20+ and include the following JVM arguments:
+适合探索本地推理和纯 Java AI 应用的同学。
 
-```
- --add-modules=jdk.incubator.vector
- --enable-native-access=ALL-UNNAMED
- --enable-preview
-```
+## 常见改造方向
+
+- 把示例中的模型配置改成你正在使用的模型服务。
+- 把硬编码的示例输入改成命令行参数、HTTP 参数或配置文件。
+- 如果示例使用外部数据库或向量库，先用最小数据集跑通写入和检索流程。
+- 跑通后再加入日志、异常处理和更贴近业务的 prompt。

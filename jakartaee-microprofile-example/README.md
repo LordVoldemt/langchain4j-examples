@@ -1,108 +1,35 @@
-# LangChain4j in Jakarta EE and MicroProfile
-This example demonstrates LangChain4J in a Jakarta EE / MicroProfile application on Open Liberty. The application is a chatbot built with LangChain4J and uses Jakarta CDI, Jakarta RESTful Web Services, Jakarta WebSocket, MicroProfile Config, MicroProfile Metrics, and MicroProfile OpenAPI features.
+# Jakarta EE / MicroProfile 示例
 
-## Prerequisites:
+## 模块定位
 
-- [Java 21](https://developer.ibm.com/languages/java/semeru-runtimes/downloads)
-- Hugging Face API Key
-  - Sign up and log in to https://huggingface.co.
-  - Go to [Access Tokens](https://huggingface.co/settings/tokens). 
-  - Create a new access token with `read` role.
-  
+演示在 Jakarta EE 和 MicroProfile 应用中集成 LangChain4j。
 
-## Environment Set Up
+## 你可以学到什么
 
-To run this example application, navigate  to the `jakartaee-microprofile-example` directory:
+- 通过 REST resource 暴露 AI 能力
+- 用 Service 封装模型调用
+- 在 Jakarta EE 容器中组织依赖
+- 编写集成测试验证接口
 
-```
-cd langchain4j-examples/jakartaee-microprofile-example
-```
+## 建议先看这些代码
 
-Set the following environment variables:
+- `ModelResource.java`：模型接口入口
+- `ChatService.java`：聊天服务
+- `ChatAgent.java`：Agent 定义
+- `RestApplication.java`：应用配置
+- `src/test/java`：接口测试示例
 
-```
-export JAVA_HOME=<your Java 21 home path>
-export HUGGING_FACE_API_KEY=<your Hugging Face read token>
-```
+## 运行前准备
 
-## Start the application
+需要 Jakarta EE / MicroProfile 运行环境，运行方式请结合 pom.xml 和已有 README。
 
-Use the Maven wrapper to start the application by using the [Liberty dev mode](https://openliberty.io/docs/latest/development-mode.html):
+## 学习建议
 
-```
-./mvnw liberty:dev
-```
+适合企业 Java 应用迁移或接入 LLM 能力时参考。
 
-## Try out the application
+## 常见改造方向
 
-- Navigate to http://localhost:9080
-- At the prompt, try the following message examples:
-  - ```
-    What are large language models?
-    ```
-  - ```
-    Which are the most used models?
-    ```
-  - ```
-    show me the documentation
-    ```
-
-
-### Try out other models
-
-Navigate to the the [OpenAPI UI](http://localhost:9080/openapi/ui) URL for the following 3 REST APIs:
-
-- [HuggingFaceLanguageModel](https://github.com/langchain4j/langchain4j/blob/main/langchain4j-hugging-face/src/main/java/dev/langchain4j/model/huggingface/HuggingFaceLanguageModel.java)
-  - Expand the GET `/api/model/language` API.
-    1. Click the **Try it out** button.
-    2. Type `When was Hugging Face launched?`, or any question, in the question field.
-    3. Click the **Execute** button.
-  - Alternatively, run the following `curl` command from a command-line session:
-    - ```
-      curl 'http://localhost:9080/api/model/language?question=When%20was%20Hugging%20Face%20launched%3F'
-
-      ```
-- [HuggingFaceChatModel](https://github.com/langchain4j/langchain4j/blob/main/langchain4j-hugging-face/src/main/java/dev/langchain4j/model/huggingface/HuggingFaceChatModel.java)
-  - expand the GET `/api/model/chat` API
-    1. Click the **Try it out** button.
-    2. Type `Which are the most used Large Language Models?`, or any question, in the question field.
-    3. Click the **Execute** button.
-  - Alternatively, run the following `curl` command from a command-line session:
-    - ```
-      curl 'http://localhost:9080/api/model/chat?userMessage=Which%20are%20the%20most%20used%20Large%20Language%20Models%3F' | jq
-      ```
-- [InProcessEmbeddingModel](https://github.com/langchain4j/langchain4j-embeddings)
-  - expand the GET `/api/model/similarity` API
-    1. Click the **Try it out** button.
-    2. Type `I like Jakarta EE and MicroProfile.`, or any text, in the the **text1** field.
-    3. Type `I like Python language.`, or any text, in the the **text2** field. 
-    3. Click the **Execute** button.
-  - Alternatively, run the following `curl` command from a command-line session:
-    - ```
-      curl 'http://localhost:9080/api/model/similarity?text1=I%20like%20Jakarta%20EE%20and%20MicroProfile.&text2=I%20like%20Python%20language.' | jq
-      ```
-
-
-## Running the tests
-
-Because you started Liberty in dev mode, you can run the provided tests by pressing the `enter/return` key from the command-line session where you started dev mode.
-
-If the tests pass, you see a similar output to the following example:
-
-```
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running it.dev.langchan4j.example.ChatServiceIT
-[INFO] ...
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.439 s...
-[INFO] ...
-[INFO] Running it.dev.langchan4j.example.ModelResourceIT
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.733 s...
-[INFO] 
-[INFO] Results:
-[INFO] 
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
-```
-
-When you are done checking out the service, exit dev mode by pressing `Ctrl+C` in the command-line session where you ran Liberty, or by typing `q` and then pressing the `enter/return` key.
+- 把示例中的模型配置改成你正在使用的模型服务。
+- 把硬编码的示例输入改成命令行参数、HTTP 参数或配置文件。
+- 如果示例使用外部数据库或向量库，先用最小数据集跑通写入和检索流程。
+- 跑通后再加入日志、异常处理和更贴近业务的 prompt。

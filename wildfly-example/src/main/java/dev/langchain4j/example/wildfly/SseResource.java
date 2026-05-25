@@ -38,6 +38,8 @@ public class SseResource {
     public void streamingChatWithAssistant(@Context Sse sse, @Context SseEventSink sseEventSink,
             @HeaderParam(HttpHeaders.LAST_EVENT_ID_HEADER) @DefaultValue("-1") int lastReceivedId,
             @QueryParam("question") String question) throws InterruptedException {
+        // SSE 是单向流式响应：浏览器发起一次 GET，服务端随后不断写入事件。
+        // Last-Event-ID 用于客户端断线重连时告诉服务端最后收到的事件编号。
         final int lastEventId;
         if (lastReceivedId != -1) {
             lastEventId = lastReceivedId + 1;
@@ -51,6 +53,7 @@ public class SseResource {
                 UserMessage.from(question));
         SseBroadcasterStreamingResponseHandler handler = new SseBroadcasterStreamingResponseHandler(sseEventSink, sse, lastEventId);
         System.out.println("streamingChatWithAssistant called within:" + Thread.currentThread());
+        // streamingChatModel 会异步产生片段，handler 负责把每个片段转换成 SSE 事件发给客户端。
         streamingChatModel.chat(messages, handler);
     }
 }

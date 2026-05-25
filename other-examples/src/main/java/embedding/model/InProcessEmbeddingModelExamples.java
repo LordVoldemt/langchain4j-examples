@@ -9,6 +9,10 @@ import dev.langchain4j.store.embedding.CosineSimilarity;
 
 import java.io.IOException;
 
+/**
+ * 这个文件学习进程内 embedding：模型在 Java 进程本地运行，不需要远程 API。
+ * 本地模型适合离线、低延迟或避免发送敏感文本，但需要对应 Maven 依赖和模型文件。
+ */
 public class InProcessEmbeddingModelExamples {
 
     static class Pre_Packaged_In_Process_Embedding_Model_Example {
@@ -18,6 +22,7 @@ public class InProcessEmbeddingModelExamples {
             String text = "Let's demonstrate that embedding can be done within a Java process and entirely offline.";
 
             // requires "langchain4j-embeddings-all-minilm-l6-v2" Maven/Gradle dependency, see pom.xml
+            // 预打包模型开箱即用，第一次运行时主要成本在加载 ONNX 模型。
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
             Embedding inProcessEmbedding = embeddingModel.embed(text).content();
@@ -58,6 +63,7 @@ public class InProcessEmbeddingModelExamples {
             // You can also convert any other model into ONNX format by following this guide: https://huggingface.co/docs/optimum/exporters/onnx/usage_guides/export_a_model
 
             // requires "langchain4j-embeddings" Maven/Gradle dependency, see pom.xml
+            // 自定义 ONNX 路径是本机路径示例，运行前需要替换成你实际下载的模型和 tokenizer 文件。
             EmbeddingModel custom = new OnnxEmbeddingModel(
                     "C:\\dev\\repo\\langchain4j-embeddings\\langchain4j-embeddings-all-minilm-l6-v2\\target\\classes\\ololo\\all-minilm-l6-v2.onnx",
                     "C:\\dev\\repo\\langchain4j-embeddings\\langchain4j-embeddings-all-minilm-l6-v2\\target\\classes\\all-minilm-l6-v2-tokenizer.json",

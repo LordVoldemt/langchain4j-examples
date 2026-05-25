@@ -30,6 +30,7 @@ public class ApplicationMain {
         var config = Services.get(Config.class);
 
         // Initialize embedding store
+        // Helidon SE 没有 CDI 启动事件，这里在 WebServer 启动前手动预热 RAG 所需的向量库。
         Services.get(MenuItemsIngestor.class)
                 .ingest();
 

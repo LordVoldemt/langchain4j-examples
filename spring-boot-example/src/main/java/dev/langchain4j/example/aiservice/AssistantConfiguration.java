@@ -17,6 +17,8 @@ public class AssistantConfiguration {
 
     /**
      * This chat memory will be used by {@link Assistant} and {@link StreamingAssistant}
+     *
+     * <p>prototype 作用域表示每次需要记忆时都创建新的 ChatMemory，避免不同会话共享同一段对话历史。</p>
      */
     @Bean
     @Scope(SCOPE_PROTOTYPE)
@@ -29,6 +31,8 @@ public class AssistantConfiguration {
      * bean   found in the application context.
      * It will listen for {@link ChatModel} in the {@link ChatModelController} as well as
      * {@link Assistant} and {@link StreamingAssistant}.
+     *
+     * <p>Listener 是观察模型调用生命周期的扩展点，适合记录请求、响应和错误，不参与业务决策。</p>
      */
     @Bean
     ChatModelListener chatModelListener() {

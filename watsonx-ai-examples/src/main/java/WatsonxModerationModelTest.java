@@ -11,6 +11,7 @@ public class WatsonxModerationModelTest {
 
         try {
 
+            // moderation 模型用于内容安全检测，返回是否触发风险而不是生成文本。
             ModerationModel model = WatsonxModerationModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

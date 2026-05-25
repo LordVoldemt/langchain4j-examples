@@ -17,6 +17,7 @@ public class BedrockStreamingChatModelExample {
         // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
         // More info on creating the API keys:
         // https://docs.aws.amazon.com/bedrock/latest/userguide/api-setup.html
+        // Streaming 模型在 Bedrock 指定 modelId 和 region 后，通过回调逐段接收输出。
         StreamingChatModel model = BedrockStreamingChatModel.builder()
                 .modelId("anthropic.claude-3-5-sonnet-20240620-v1:0")
                 .region(Region.US_EAST_1)

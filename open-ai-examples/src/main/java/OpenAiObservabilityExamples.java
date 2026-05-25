@@ -30,6 +30,7 @@ public class OpenAiObservabilityExamples {
 
                 @Override
                 public void onRequest(ChatModelRequestContext requestContext) {
+                    // listener 可以观察即将发往 provider 的消息、参数和 provider 名称，常用于日志与审计。
                     ChatRequest chatRequest = requestContext.chatRequest();
 
                     List<ChatMessage> messages = chatRequest.messages();
@@ -68,6 +69,7 @@ public class OpenAiObservabilityExamples {
 
                 @Override
                 public void onResponse(ChatModelResponseContext responseContext) {
+                    // 响应 metadata 中包含模型名、结束原因和 token 用量，可用于成本统计和线上排查。
                     ChatResponse chatResponse = responseContext.chatResponse();
 
                     AiMessage aiMessage = chatResponse.aiMessage();
@@ -120,6 +122,7 @@ public class OpenAiObservabilityExamples {
             ChatModel model = OpenAiChatModel.builder()
                     .apiKey(System.getenv("OPENAI_API_KEY"))
                     .modelName(GPT_4_O_MINI)
+                    // listeners 在不改变业务调用方式的情况下挂接观测逻辑。
                     .listeners(List.of(listener))
                     .build();
 

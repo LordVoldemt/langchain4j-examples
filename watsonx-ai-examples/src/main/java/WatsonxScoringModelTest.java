@@ -9,6 +9,7 @@ public class WatsonxScoringModelTest {
 
         try {
 
+            // scoring/rerank 模型根据 query 对候选文本排序，常用于 RAG 检索后的重排。
             ScoringModel model = WatsonxScoringModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

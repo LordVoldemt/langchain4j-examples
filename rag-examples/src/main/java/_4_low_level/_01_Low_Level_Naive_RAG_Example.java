@@ -31,6 +31,10 @@ import static java.util.stream.Collectors.joining;
 import static shared.Utils.OPENAI_API_KEY;
 import static shared.Utils.toPath;
 
+/**
+ * 中文导读：这个示例不用 AI Services，而是手写低层 RAG 全流程。
+ * 适合学习 LangChain4j 各个基础对象如何配合，但业务项目通常优先使用更高层的 AI Services。
+ */
 public class _01_Low_Level_Naive_RAG_Example {
 
     /**
@@ -68,6 +72,7 @@ public class _01_Low_Level_Naive_RAG_Example {
 
         // Find relevant embeddings in embedding store by semantic similarity
         // You can play with parameters below to find a sweet spot for your specific use case
+        // maxResults 和 minScore 决定召回多少上下文；过宽会引入噪声，过严可能找不到答案。
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(questionEmbedding)
                 .maxResults(3)
@@ -93,6 +98,7 @@ public class _01_Low_Level_Naive_RAG_Example {
         variables.put("question", question);
         variables.put("information", information);
 
+        // 这里手动把检索结果拼进 prompt，AI Services 的 RAG 配置会帮你隐藏这一步。
         Prompt prompt = promptTemplate.apply(variables);
 
         // Send the prompt to the OpenAI chat model

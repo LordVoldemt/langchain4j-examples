@@ -15,7 +15,9 @@ public class MilvusEmbeddingStoreExample {
     public static void main(String[] args) {
 
         try (MilvusContainer milvus = new MilvusContainer("milvusdb/milvus:v2.3.1")) {
+            // Testcontainers 启动临时 Milvus 服务，示例通过容器 endpoint 连接。
             milvus.start();
+            // collectionName 是 Milvus 中保存向量的集合名，dimension 要与 embedding 模型一致。
             EmbeddingStore<TextSegment> embeddingStore = MilvusEmbeddingStore.builder()
                     .uri(milvus.getEndpoint())
                     .collectionName("test_collection")
@@ -24,6 +26,7 @@ public class MilvusEmbeddingStoreExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 将两段文本向量化后写入 Milvus collection。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -32,6 +35,7 @@ public class MilvusEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
+            // 查询文本转成向量后，在 Milvus 中查找最相似的一条记录。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                     .queryEmbedding(queryEmbedding)

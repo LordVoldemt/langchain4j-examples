@@ -15,6 +15,7 @@ public class VoyageAiEmbeddingModelExample {
     @Test
     void should_embed_single_text() {
 
+        // Voyage embedding 模型专注文本向量化；apiKey 从环境变量读取，modelName 选择向量模型版本。
         EmbeddingModel model = VoyageAiEmbeddingModel.builder()
                 .apiKey(System.getenv("VOYAGE_API_KEY"))
                 .modelName(VoyageAiEmbeddingModelName.VOYAGE_3_LITE)
@@ -29,6 +30,7 @@ public class VoyageAiEmbeddingModelExample {
     void should_respect_encoding_format() {
 
         // Using base64 encoding format to compress the embedding
+        // encodingFormat 可改变向量返回编码形式，适合在带宽或存储敏感场景中压缩传输。
         EmbeddingModel model = VoyageAiEmbeddingModel.builder()
                 .apiKey(System.getenv("VOYAGE_API_KEY"))
                 .modelName(VoyageAiEmbeddingModelName.VOYAGE_3_LITE)

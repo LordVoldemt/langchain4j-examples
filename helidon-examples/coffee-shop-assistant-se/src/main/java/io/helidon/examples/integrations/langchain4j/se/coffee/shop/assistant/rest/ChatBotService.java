@@ -30,6 +30,7 @@ public class ChatBotService implements HttpService {
 
     @Override
     public void routing(HttpRules httpRules) {
+        // Helidon SE 通过代码注册路由；GET /chat 会进入 chatWithAssistant 方法。
         httpRules.get("/chat", this::chatWithAssistant);
     }
 
@@ -45,6 +46,7 @@ public class ChatBotService implements HttpService {
      */
     private void chatWithAssistant(ServerRequest req, ServerResponse res) {
         var question = req.query().first("question").orElse("Hello");
+        // 从 HTTP 请求进入普通 Java 服务，再由 ChatAiService 代理完成 AI 调用。
         var answer = chatAiService.chat(question);
         res.send(answer);
     }

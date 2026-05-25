@@ -26,6 +26,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例把 RAG 的每一步拆开写，便于理解“加载文档 -> 切分 -> 向量化 -> 检索 -> 交给模型”。
+ * 这里的向量库是内存实现，程序结束后不会保存数据；真实项目通常会换成持久化向量数据库。
+ */
 public class Naive_RAG_Example {
 
     /**
@@ -85,6 +89,7 @@ public class Naive_RAG_Example {
         // to split by paragraphs. If a paragraph is too large to fit into a single segment,
         // the splitter will recursively divide it by newlines, then by sentences, and finally by words,
         // if necessary, to ensure each piece of text fits into a single segment.
+        // chunk 大小会影响召回质量和 token 成本；300 是教学用的起点，不是所有场景的最佳值。
         DocumentSplitter splitter = DocumentSplitters.recursive(300, 0);
         List<TextSegment> segments = splitter.split(document);
 
@@ -93,6 +98,7 @@ public class Naive_RAG_Example {
         // Embedding is needed for performing similarity searches.
         // For this example, we'll use a local in-process embedding model, but you can choose any supported model.
         // Langchain4j currently supports more than 10 popular embedding model providers.
+        // 本地 embedding 模型不需要外部 API Key，适合示例和离线实验。
         EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
         List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
 
@@ -111,6 +117,7 @@ public class Naive_RAG_Example {
         // The content retriever is responsible for retrieving relevant content based on a user query.
         // Currently, it is capable of retrieving text segments, but future enhancements will include support for
         // additional modalities like images, audio, and more.
+        // ContentRetriever 是 AI Service 接入外部知识的入口，查询时会先从向量库找相关片段。
         ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
                 .embeddingStore(embeddingStore)
                 .embeddingModel(embeddingModel)

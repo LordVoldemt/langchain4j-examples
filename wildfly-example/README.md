@@ -1,63 +1,33 @@
-Langchain4J WildFly Example
-============================
+# WildFly 示例
 
-This simple application is aiming to provide a demonstrator of the WildFly AI Feature Pack.
+## 模块定位
 
-## Setting up Ollama
+演示在 WildFly / Jakarta EE 环境中使用 LangChain4j，并通过 SSE 输出流式响应。
 
-You will need to have either **docker** or **podman** installed.
+## 你可以学到什么
 
-To start Ollama and select the proper model (aka `llama3.1:8b) executethe following commands:
+- Jakarta EE 应用结构
+- WildFly 中部署 AI 服务
+- SSE 流式响应
+- REST resource 与模型调用结合
 
-```shell
-podman run -d --rm --name ollama --replace --pull=always -p 11434:11434 -v ollama:/root/.ollama --stop-signal=SIGKILL mirror.gcr.io/ollama/ollama
+## 建议先看这些代码
 
-podman exec -it ollama ollama run llama3.1:8b
-```
-To quit the Ollama prompt, type **/bye**.
+- `RestApplication.java`：应用入口
+- `SseResource.java`：SSE 接口
+- `SseBroadcasterStreamingResponseHandler.java`：流式响应处理
 
-##  Provisioning using the [WildFly Maven Plugin](https://github.com/wildfly/wildfly-maven-plugin/)
+## 运行前准备
 
-This exaple remies on [WildFly Glow](https://docs.wildfly.org/wildfly-glow/) to configure and provision the server and the sample application using [WildFly Maven Plugin](http://github.com/wildfly/wildfly-maven-plugin) like this:
+需要 WildFly 运行环境和模型 API key。
 
-```xml
-...
-<configuration>
-  <discoverProvisioningInfo>
-    <spaces>
-      <space>incubating</space>
-    </spaces>
-    <version>${version.wildfly.server}</version>
-  </discoverProvisioningInfo>
-  <name>ROOT.war</name>
-  <packagingScripts>
-    <packaging-script>
-      <scripts>
-        <script>./src/scripts/configure_logs.cli</script>
-      </scripts>
-    </packaging-script>
-  </packagingScripts>
-</configuration>
-...
-```
+## 学习建议
 
-The JBoss CLI script configure the log level to make sure that Requests and Responses can be properly traced.
+适合已有 WildFly 应用、想加入 AI 聊天或流式输出能力的项目参考。
 
-##  Building and running the example application
+## 常见改造方向
 
-You build using Apache Maven with the following command:
-
-```shell
-mvn clean install
-```
-You can now start the server:
-```shell
- ./target/server/bin/standalone.sh 
-```
-You can interact with the application using:
-* a simple REST endpoint over the very miniaml AIService [ChatBot](http://localhost:8080/)
-
-Once you have finished you can stop Ollama using:
-```shell
-podman stop ollama
-```
+- 把示例中的模型配置改成你正在使用的模型服务。
+- 把硬编码的示例输入改成命令行参数、HTTP 参数或配置文件。
+- 如果示例使用外部数据库或向量库，先用最小数据集跑通写入和检索流程。
+- 跑通后再加入日志、异常处理和更贴近业务的 prompt。

@@ -8,6 +8,8 @@ import domain.CvReview;
 
 public interface HrCvReviewer {
 
+    // 并行评审中的每个 reviewer 都关注不同视角；name 用来让日志和编排结果更容易识别。
+    // 返回 CvReview 后，外层 parallel workflow 会把多个评分合并。
     @Agent(name = "hrReviewer", description = "Reviews a CV to check if candidate fits HR requirements, gives feedback and a score")
     @SystemMessage("""
             You are working for HR and review CVs to fill a position with these requirements:

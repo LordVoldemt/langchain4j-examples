@@ -32,6 +32,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.OPENAI_API_KEY;
 import static shared.Utils.toPath;
 
+/**
+ * 中文导读：这个示例学习返回答案的同时返回 sources，方便展示引用、调试召回质量和做人工审核。
+ * 接口返回 Result<String> 而不是 String，是为了同时拿到模型答案和检索到的内容。
+ */
 public class _09_Advanced_RAG_Return_Sources_Example {
 
 
@@ -64,6 +68,7 @@ public class _09_Advanced_RAG_Return_Sources_Example {
                     break;
                 }
 
+                // Result.content() 是最终回答，Result.sources() 是本轮检索注入给模型的资料。
                 Result<String> result = assistant.answer(userQuery);
                 log.info("==================================================");
                 log.info("Assistant: " + result.content());

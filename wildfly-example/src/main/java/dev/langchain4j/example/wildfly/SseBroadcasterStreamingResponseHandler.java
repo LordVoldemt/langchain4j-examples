@@ -32,6 +32,7 @@ public class SseBroadcasterStreamingResponseHandler implements StreamingChatResp
 
     @Override
     public void onPartialResponse(String partialResponse) {
+        // 每收到一个模型片段就发送一个名为 token 的 SSE 事件，前端可以边收边渲染。
         OutboundSseEvent sseEvent = eventBuilder
                 .name("token")
                 .id(String.valueOf(lastEventId.getAndIncrement()))
@@ -45,6 +46,7 @@ public class SseBroadcasterStreamingResponseHandler implements StreamingChatResp
 
     @Override
     public void onCompleteResponse(ChatResponse completeResponse) {
+        // 完整响应结束后发送一个约定的结束 token，再关闭 SSE 连接。
         OutboundSseEvent sseEvent = eventBuilder
                 .name("token")
                 .id(String.valueOf(lastEventId.getAndIncrement()))

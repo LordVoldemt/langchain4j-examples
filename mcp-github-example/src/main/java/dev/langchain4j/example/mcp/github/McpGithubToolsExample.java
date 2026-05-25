@@ -38,6 +38,8 @@ public class McpGithubToolsExample {
                 .logResponses(true)
                 .build();
 
+        // GitHub MCP server 通过 Docker 子进程启动；GITHUB_PERSONAL_ACCESS_TOKEN 只从环境变量透传，
+        // 示例不硬编码 token，避免把真实凭证写入代码仓库。
         McpTransport transport = new StdioMcpTransport.Builder()
                 .command(List.of("/usr/local/bin/docker", "run", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "-i", "mcp/git"))
                 .logEvents(true)
@@ -51,6 +53,7 @@ public class McpGithubToolsExample {
                 .mcpClients(List.of(mcpClient))
                 .build();
 
+        // MCP 工具让模型能查询 Git 仓库信息；这里的 prompt 只描述目标，不手写 GitHub API 调用。
         Bot bot = AiServices.builder(Bot.class)
                 .chatModel(model)
                 .toolProvider(toolProvider)
@@ -60,6 +63,7 @@ public class McpGithubToolsExample {
             String response = bot.chat("Summarize the last 3 commits of the LangChain4j GitHub repository");
             System.out.println("RESPONSE: " + response);
         } finally {
+            // 关闭 MCP client 会同步释放底层 Docker/stdio 通道资源。
             mcpClient.close();
         }
     }

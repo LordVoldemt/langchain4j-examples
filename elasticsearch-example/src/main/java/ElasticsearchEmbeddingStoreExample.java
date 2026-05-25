@@ -26,11 +26,13 @@ public class ElasticsearchEmbeddingStoreExample {
                 new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.15.0")
                         .withPassword("changeme")
         ) {
+            // 使用 Testcontainers 启动带 TLS 的临时 Elasticsearch，密码仅用于本地容器示例。
             elastic.start();
 
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "changeme"));
 
+            // RestClient 复用容器生成的 CA 证书，连接到 Testcontainers 暴露的 HTTPS 地址。
             RestClient client = RestClient.builder(HttpHost.create("https://" + elastic.getHttpHostAddress()))
                     .setHttpClientConfigCallback(httpClientBuilder -> {
                         httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
@@ -39,12 +41,14 @@ public class ElasticsearchEmbeddingStoreExample {
                     })
                     .build();
 
+            // 未指定索引名时使用默认索引，EmbeddingStore 会负责保存向量和 TextSegment。
             EmbeddingStore<TextSegment> embeddingStore = ElasticsearchEmbeddingStore.builder()
                     .restClient(client)
                     .build();
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 将文本向量化后写入 Elasticsearch，后续通过向量相似度找回语义最接近的片段。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -53,9 +57,10 @@ public class ElasticsearchEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
-            // Refresh the index so the data is visible
+            // 刷新索引让刚写入的向量立即可见；生产环境通常依赖 Elasticsearch 的自动刷新。
             client.performRequest(new Request("POST", "/default/_refresh"));
 
+            // 查询也先转为 embedding，再交给 EmbeddingStore 执行相似度搜索。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchResult<TextSegment> relevant = embeddingStore.search(
                     EmbeddingSearchRequest.builder()

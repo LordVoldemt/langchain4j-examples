@@ -17,6 +17,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.time.Duration.ofSeconds;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个文件集中演示 AI Services：用 Java 接口描述能力，再由 LangChain4j 生成代理实现。
+ * 新手重点看接口注解、方法参数和返回类型如何变成 prompt、记忆和结构化输出。
+ */
 public class _08_AIServiceExamples {
 
     static ChatModel model = OpenAiChatModel.builder()
@@ -36,6 +40,7 @@ public class _08_AIServiceExamples {
 
         public static void main(String[] args) {
 
+            // AiServices.create 会为接口创建代理，调用 assistant.chat() 时才真正请求模型。
             Assistant assistant = AiServices.create(Assistant.class, model);
 
             String userMessage = "Translate 'Plus-Values des cessions de valeurs mobilières, de droits sociaux et gains assimilés'";
@@ -80,6 +85,7 @@ public class _08_AIServiceExamples {
 
         public static void main(String[] args) {
 
+            // @SystemMessage、@UserMessage 和 @V 组合后，可以把方法参数安全地填入提示词。
             TextUtils utils = AiServices.create(TextUtils.class, model);
 
             String translation = utils.translate("Hello, how are you?", "italian");
@@ -394,8 +400,10 @@ public class _08_AIServiceExamples {
 
         public static void main(String[] args) {
 
+            // MessageWindowChatMemory 按消息条数裁剪上下文，适合先理解多轮对话的基本机制。
             ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
 
+            // builder 写法适合同时配置模型、记忆、工具、检索器等多个组件。
             Assistant assistant = AiServices.builder(Assistant.class)
                     .chatModel(model)
                     .chatMemory(chatMemory)

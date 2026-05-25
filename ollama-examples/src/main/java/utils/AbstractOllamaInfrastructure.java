@@ -13,6 +13,7 @@ public class AbstractOllamaInfrastructure {
 
     static {
         if (isNullOrEmpty(OLLAMA_BASE_URL)) {
+            // 没有配置 OLLAMA_BASE_URL 时，用 Testcontainers 拉起本地 Ollama，便于示例自包含运行。
             String localOllamaImage = localOllamaImage(MODEL_NAME);
             ollama = new LangChain4jOllamaContainer(OllamaImage.resolve(OllamaImage.OLLAMA_IMAGE, localOllamaImage))
                     .withModel(MODEL_NAME);

@@ -26,6 +26,7 @@ public class ChatApp extends Application {
     public void start(Stage stage) {
         LOGGER.info("Starting...");
 
+        // start() 是 JavaFX 生命周期入口，所有控件都在这里创建并绑定到可观察数据。
         var holder = new VBox();
         holder.setStyle("-fx-padding: 15px;");
 
@@ -76,6 +77,7 @@ public class ChatApp extends Application {
         var initAction = new SearchAction("Initializing search engine, please stand by...");
         data.add(initAction);
         lastAnswer.textProperty().bind(initAction.getAnswerProperty());
+        // 初始化模型可能访问网络，放到后台线程，避免阻塞 JavaFX UI 线程。
         new Thread(() -> docsAnswerService.init(initAction)).start();
     }
 
@@ -87,6 +89,7 @@ public class ChatApp extends Application {
         var searchAction = new SearchAction(question);
         data.add(searchAction);
         lastAnswer.textProperty().bind(searchAction.getAnswerProperty());
+        // 每次提问都交给后台线程；流式结果再由 CustomStreamingResponseHandler 回到 UI。
         new Thread(() -> docsAnswerService.ask(searchAction)).start();
     }
 }

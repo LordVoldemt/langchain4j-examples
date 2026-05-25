@@ -52,7 +52,7 @@ public class Example15_BatchEmbedFromFile {
                 new BatchFileRequest<>("dl-text", TextSegment.from("Deep learning uses neural networks with multiple layers."))
         );
 
-        // Step 1: Write requests to a local JSONL file
+        // 第一步：把 embedding 请求写入 JSONL 文件，避免 inline batch 的大小限制。
         var tempFile = Files.createTempFile("batch-embed-requests-", ".jsonl");
         var writer = JsonLinesWriters.streaming(tempFile);
         System.out.println("Writing batch embedding requests to: " + tempFile);
@@ -62,7 +62,7 @@ public class Example15_BatchEmbedFromFile {
         System.out.println("JSONL content:");
         Files.readAllLines(tempFile).forEach(line -> System.out.println("  " + line));
 
-        // Step 2: Upload the file using Gemini Files API
+        // 第二步：上传文件，并等待文件状态变为 ACTIVE 后再创建 batch。
         System.out.println("\nUploading file to Gemini Files API...");
         var uploadedFile = geminiFiles.uploadFile(tempFile, "batch-embed-requests.jsonl");
         System.out.println("Uploaded file URI: " + uploadedFile.uri());

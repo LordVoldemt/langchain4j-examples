@@ -7,6 +7,8 @@ import io.quarkiverse.langchain4j.RegisterAiService;
 @RegisterAiService
 public interface TriageService {
 
+    // Quarkus LangChain4j 会为这个接口生成 CDI Bean，Resource 注入后像调用普通服务一样调用 AI。
+    // SystemMessage 定义长期角色，UserMessage 模板中的 {review} 会被方法参数替换。
     @SystemMessage("""
             You are working for a bank. You are an AI processing reviews about financial products. You need to triage the reviews into positive and negative ones.
             You will always answer with a JSON document, and only this JSON document.

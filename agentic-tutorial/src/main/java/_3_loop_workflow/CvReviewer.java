@@ -8,6 +8,8 @@ import domain.CvReview;
 
 public interface CvReviewer {
 
+    // reviewer 输出 CvReview，loop 的退出条件会读取其中的 score；
+    // 也就是说模型的结构化输出会直接影响工作流是否继续迭代。
     @Agent("Reviews a CV according to specific instructions, gives feedback and a score. Factor in how well the CV is tailored to the job")
     @SystemMessage("""
             You are the hiring manager for this job:

@@ -34,6 +34,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习把网页搜索作为额外 retriever，补充本地知识库中没有的新鲜信息。
+ * 运行需要 TAVILY_API_KEY 环境变量；网页内容质量和时效性会直接影响最终回答。
+ */
 public class _08_Advanced_RAG_Web_Search_Example {
 
 
@@ -70,6 +74,7 @@ public class _08_Advanced_RAG_Web_Search_Example {
                 .build();
 
         // Let's create our web search content retriever.
+        // WebSearchContentRetriever 负责把搜索结果包装成 RAG 可用的 Content。
         WebSearchEngine webSearchEngine = TavilyWebSearchEngine.builder()
                 .apiKey(System.getenv("TAVILY_API_KEY")) // get a free key: https://app.tavily.com/sign-in
                 .build();

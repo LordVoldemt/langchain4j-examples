@@ -31,6 +31,7 @@ class WatsonxToolsTest {
 
         try {
             
+            // 选择支持 tools 的 Watsonx 模型后，LangChain4j 才能把 @Tool 方法暴露给模型规划。
             ChatModel model = WatsonxChatModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

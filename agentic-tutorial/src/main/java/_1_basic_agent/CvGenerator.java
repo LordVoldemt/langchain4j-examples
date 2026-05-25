@@ -5,6 +5,8 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 
 public interface CvGenerator {
+    // Agent 接口只描述“要模型做什么”；AgenticServices 会在运行时生成实现类。
+    // @V("lifeStory") 的名字必须和模板中的 {{lifeStory}} 以及调用方传入的参数名一致。
     @UserMessage("""
             Here is information on my life and professional trajectory
             that you should turn into a clean and complete CV.

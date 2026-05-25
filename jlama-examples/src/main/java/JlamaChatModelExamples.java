@@ -10,6 +10,7 @@ public class JlamaChatModelExamples {
 
         public static void main(String[] args) {
 
+            // Jlama 在本地加载模型运行，适合演示无需远程 API 的最小聊天流程。
             ChatModel model = JlamaChatModel.builder()
                     .modelName("tjake/Llama-3.2-1B-Instruct-JQ4")
                     .temperature(0.3f)

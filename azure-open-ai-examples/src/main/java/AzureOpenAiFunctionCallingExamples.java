@@ -36,6 +36,7 @@ public class AzureOpenAiFunctionCallingExamples {
         static ChatModel azureOpenAiModel = AzureOpenAiChatModel.builder()
                 .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                 .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+                // deploymentName 指向 Azure 中已部署且支持 tools/function calling 的模型部署。
                 .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
                 .temperature(0.7)
                 .logRequestsAndResponses(true)
@@ -46,6 +47,7 @@ public class AzureOpenAiFunctionCallingExamples {
             // STEP 1: User specify tools and query
             // Tools
             WeatherTools weatherTools = new WeatherTools();
+            // LangChain4j 根据 @Tool 方法生成工具 schema，并随 ChatRequest 发给 Azure OpenAI。
             List<ToolSpecification> toolSpecifications = ToolSpecifications.toolSpecificationsFrom(weatherTools);
             // User query
             List<ChatMessage> chatMessages = new ArrayList<>();
@@ -61,6 +63,7 @@ public class AzureOpenAiFunctionCallingExamples {
                             .build())
                     .build();
             AiMessage aiMessage = azureOpenAiModel.chat(chatRequest).aiMessage();
+            // 模型只决定要调用哪个工具和参数，真正执行仍在应用进程中完成。
             List<ToolExecutionRequest> toolExecutionRequests = aiMessage.toolExecutionRequests();
             System.out.println("Out of the " + toolSpecifications.size() + " functions declared in WeatherTools, " + toolExecutionRequests.size() + " will be invoked:");
             toolExecutionRequests.forEach(toolExecutionRequest -> {
@@ -75,6 +78,7 @@ public class AzureOpenAiFunctionCallingExamples {
                 ToolExecutor toolExecutor = new DefaultToolExecutor(weatherTools, toolExecutionRequest);
                 System.out.println("Now let's execute the function " + toolExecutionRequest.name());
                 String result = toolExecutor.execute(toolExecutionRequest, UUID.randomUUID().toString());
+                // 把工具结果追加回历史消息，下一次模型调用才能整合工具输出生成最终答复。
                 ToolExecutionResultMessage toolExecutionResultMessages = ToolExecutionResultMessage.from(toolExecutionRequest, result);
                 chatMessages.add(toolExecutionResultMessages);
             });

@@ -17,6 +17,7 @@ import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 public class Example01_SimpleChat {
     public static void main(String[] args) {
         String apiKey = System.getenv("GOOGLE_AI_GEMINI_API_KEY");
+        // Google AI Gemini 使用 API key 鉴权；modelName 选择具体 Gemini 变体。
         ChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(apiKey)
                 .modelName("gemini-2.5-flash-lite")

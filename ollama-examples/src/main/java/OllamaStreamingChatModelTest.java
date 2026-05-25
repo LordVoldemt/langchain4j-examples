@@ -22,6 +22,7 @@ class OllamaStreamingChatModelTest extends AbstractOllamaInfrastructure {
     @Test
     void streaming_example() {
 
+        // Ollama streaming 通过本地 baseUrl 建立连接，回调中逐段接收生成结果。
         StreamingChatModel model = OllamaStreamingChatModel.builder()
                 .baseUrl(ollamaBaseUrl(ollama))
                 .modelName(MODEL_NAME)

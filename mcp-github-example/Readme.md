@@ -1,55 +1,32 @@
-# MCP GitHub Tools Example
+# MCP GitHub 示例
 
-This project demonstrates how to use the [LangChain4j](https://github.com/langchain4j/langchain4j) framework with the GitHub MCP (Model Context Protocol) server to summarise the latest commits of a public GitHub repository using an LLM (Large Language Model).
+## 模块定位
 
-## Features
+演示通过 MCP 让 LangChain4j Agent 调用 GitHub 能力。
 
-- Connects to the GitHub MCP server via Docker and stdin/stdout.
-- Uses OpenAI's GPT-4o-mini model to process and summarise commit data.
-- No authentication required for public repositories.
+## 你可以学到什么
 
-## Prerequisites
+- 连接 GitHub MCP 工具
+- 让模型通过工具读取或操作 GitHub 数据
+- 理解 MCP 工具和普通 Java @Tool 的差异
+- 把外部 SaaS 能力接入 Agent
 
-- Java (JDK 17+ recommended)
-- Maven
-- Docker (installed and running)
-- OpenAI API key (set as the `OPENAI_API_KEY` environment variable)
+## 建议先看这些代码
 
-## Setup
+- `Bot.java`：Bot 定义
+- `McpGithubToolsExample.java`：GitHub MCP 调用示例
 
-1. **Build the GitHub MCP Docker image:**
+## 运行前准备
 
-   Follow the instructions at [modelcontextprotocol/servers/src/github](https://github.com/modelcontextprotocol/servers/tree/main/src/git) to build the `mcp/git` Docker image.
-```sh
-   git clone https://github.com/modelcontextprotocol/servers.git
-   cd servers/src/github
-   docker build -t mcp/git .
-   docker run -i mcp/git
-   ```
-2. **Set your OpenAI API key:**
-```sh
-   export OPENAI_API_KEY=your_openai_api_key
-   ```
-3. **Clone this repository and build the project:** 
-```
-git clone <this-repo-url> 
-cd <this-repo> 
-mvn clean package
-```
+需要 GitHub token，以及可用的 GitHub MCP server 配置。
 
-4. ## Running the Example
+## 学习建议
 
-Run the `McpGithubToolsExample` class. This will:
+适合学完 mcp-example 后继续阅读，理解真实工具集成。
 
-- Start the GitHub MCP server in a Docker container.
-- Use the LLM to summarise the last 3 commits of the [LangChain4j GitHub repository](https://github.com/langchain4j/langchain4j).
+## 常见改造方向
 
-You can run the example from your IDE or with Maven:
-
-```mvn exec:java -Dexec.mainClass=dev.langchain4j.example.mcp.github.McpGithubToolsExample```
-
-## Notes
-
-- The MCP server is started as a subprocess using Docker. Make sure Docker is available at `/usr/local/bin/docker` or adjust the path in the code if needed.
-- The example does not require a GitHub personal access token for public repositories, but you can provide one via the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable if needed.
-
+- 把示例中的模型配置改成你正在使用的模型服务。
+- 把硬编码的示例输入改成命令行参数、HTTP 参数或配置文件。
+- 如果示例使用外部数据库或向量库，先用最小数据集跑通写入和检索流程。
+- 跑通后再加入日志、异常处理和更贴近业务的 prompt。

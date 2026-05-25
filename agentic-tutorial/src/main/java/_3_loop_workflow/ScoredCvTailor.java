@@ -8,6 +8,8 @@ import domain.CvReview;
 
 public interface ScoredCvTailor {
 
+    // 这个 Agent 把上一轮 review 当作改写指令，让“评审 -> 修改”形成闭环。
+    // 注意提示词强调不能编造事实，避免为了提高分数而产生不真实履历。
     @Agent("Tailors a CV according to specific instructions")
     @SystemMessage("""
             Here is a CV that needs tailoring to a specific job description, feedback or other instruction.

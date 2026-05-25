@@ -7,6 +7,7 @@ public class WatsonxEmbeddingModelTest {
 
         try {
 
+            // embedding 模型同样需要 Watsonx 的 URL、API key、projectId，并选择向量模型名。
             EmbeddingModel model = WatsonxEmbeddingModel.builder()
                 .baseUrl(System.getenv("WATSONX_URL"))
                 .apiKey(System.getenv("WATSONX_API_KEY"))

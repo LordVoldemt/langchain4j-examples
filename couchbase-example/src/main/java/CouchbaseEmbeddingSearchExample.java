@@ -21,12 +21,14 @@ public class CouchbaseEmbeddingSearchExample {
     public static void main(String[] args) throws InterruptedException {
 
         try (CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageName.parse("couchbase:enterprise").asCompatibleSubstituteFor("couchbase/server"))
+                // Testcontainers 会创建带默认 bucket 的 Couchbase，示例无需依赖外部服务。
                 .withCredentials("Administrator", "password")
                 .withBucket(testBucketDefinition)
                 .withStartupTimeout(Duration.ofMinutes(1))) {
 
             couchbase.start();
 
+            // bucket/scope/collection 指向 Couchbase 中保存向量和原文的位置，searchIndexName 是向量搜索索引名。
             CouchbaseEmbeddingStore embeddingStore = new CouchbaseEmbeddingStore.Builder()
                     .clusterUrl(couchbase.getConnectionString())
                     .username(couchbase.getUsername())
@@ -40,6 +42,7 @@ public class CouchbaseEmbeddingSearchExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 示例先写入两段文本及其 embedding，再用语义相近的问题检索最相关文本。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -48,7 +51,7 @@ public class CouchbaseEmbeddingSearchExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
-            Thread.sleep(1000); // to be sure that embeddings were persisted
+            Thread.sleep(1000); // 等待 Couchbase 索引刷新，确保刚写入的向量可被搜索到。
 
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()

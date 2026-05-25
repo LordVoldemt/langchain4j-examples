@@ -8,6 +8,7 @@ public class AzureOpenAIDallEExample {
 
         public static void main(String[] args) {
 
+            // 图片生成在 Azure 中通常对应独立的 DALL-E deployment，需要和聊天 deployment 分开配置。
             AzureOpenAiImageModel model = AzureOpenAiImageModel.builder()
                     .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))

@@ -28,6 +28,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习 reranking：先粗召回多个片段，再用打分模型重新排序和过滤。
+ * 运行需要 COHERE_API_KEY；如果没有外部打分模型，可以先理解流程再替换成自己的评分方式。
+ */
 public class _03_Advanced_RAG_with_ReRanking_Example {
 
     /**
@@ -87,6 +91,7 @@ public class _03_Advanced_RAG_with_ReRanking_Example {
                 .modelName("rerank-multilingual-v3.0")
                 .build();
 
+        // ContentAggregator 位于检索之后、发送给 LLM 之前，用来整理和筛选候选内容。
         ContentAggregator contentAggregator = ReRankingContentAggregator.builder()
                 .scoringModel(scoringModel)
                 .minScore(0.8) // we want to present the LLM with only the truly relevant segments for the user's query

@@ -17,6 +17,8 @@ public class PineconeEmbeddingStoreExample {
 
         EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+        // Pinecone 是外部托管服务，API key 从环境变量读取；不要把真实 key 写进示例代码。
+        // index 指定向量索引，namespace 使用随机值避免多次运行时和旧数据混在一起。
         EmbeddingStore<TextSegment> embeddingStore = PineconeEmbeddingStore.builder()
                 .apiKey(System.getenv("PINECONE_API_KEY"))
                 .index("test")
@@ -28,6 +30,7 @@ public class PineconeEmbeddingStoreExample {
                         .build())
                 .build();
 
+        // 写入文本及其 embedding 到 Pinecone serverless index。
         TextSegment segment1 = TextSegment.from("I like football.");
         Embedding embedding1 = embeddingModel.embed(segment1).content();
         embeddingStore.add(embedding1, segment1);
@@ -36,8 +39,9 @@ public class PineconeEmbeddingStoreExample {
         Embedding embedding2 = embeddingModel.embed(segment2).content();
         embeddingStore.add(embedding2, segment2);
 
-        Thread.sleep(5_000); // it takes some time for Pinecone to persist
+        Thread.sleep(5_000); // Pinecone 持久化和索引更新需要一点时间，等待后再查询。
 
+        // 查询文本向量化后，在指定 namespace 中按相似度检索。
         Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
         EmbeddingSearchRequest searchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)

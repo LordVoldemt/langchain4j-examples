@@ -27,6 +27,7 @@ public class ElasticsearchEmbeddingStoreWithScriptExample {
                 new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.15.0")
                         .withPassword("changeme")
         ) {
+            // 使用 Testcontainers 启动临时 Elasticsearch，避免示例依赖本机预装服务。
             elastic.start();
 
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -40,6 +41,7 @@ public class ElasticsearchEmbeddingStoreWithScriptExample {
                     })
                     .build();
 
+            // 这里演示使用脚本配置方式创建 Elasticsearch 向量索引和检索脚本。
             EmbeddingStore<TextSegment> embeddingStore = ElasticsearchEmbeddingStore.builder()
                     .restClient(client)
                     .configuration(ElasticsearchConfigurationScript.builder().build())
@@ -47,6 +49,7 @@ public class ElasticsearchEmbeddingStoreWithScriptExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 写入两条文本对应的 embedding，TextSegment 原文会与向量一起存储。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -55,9 +58,10 @@ public class ElasticsearchEmbeddingStoreWithScriptExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
-            // Refresh the index so the data is visible
+            // 刷新默认索引，确保后面的向量搜索能立刻看到示例写入的数据。
             client.performRequest(new Request("POST", "/default/_refresh"));
 
+            // 按查询 embedding 与已存 embedding 的相似度返回最相关片段。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchResult<TextSegment> relevant = embeddingStore.search(
                     EmbeddingSearchRequest.builder()

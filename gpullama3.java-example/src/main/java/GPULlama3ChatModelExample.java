@@ -11,6 +11,7 @@ public class GPULlama3ChatModelExample {
     public static void main(String[] args) {
 
         // Read path to your *local* model files.
+        // 本地模型示例不调用云端 API；LOCAL_LLMS_PATH 指向本机 gguf 模型目录。
         String localLLMsPath = System.getenv("LOCAL_LLMS_PATH");
 
         // Check if the environment variable is set
@@ -50,6 +51,7 @@ public class GPULlama3ChatModelExample {
 
         GPULlama3ChatModel model = GPULlama3ChatModel.builder()
                 .modelPath(modelPath)
+                // onGPU=true 时优先使用 GPU 推理；改成 false 可用 CPU 跑同一个示例，便于无 GPU 环境验证。
                 .onGPU(Boolean.TRUE) //if false, runs on CPU though a lightweight implementation of llama3.java
                 .build();
         // @formatter:on

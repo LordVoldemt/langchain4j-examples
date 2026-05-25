@@ -33,6 +33,7 @@ public class JlamaBasicRagEmbedExamples {
 
         public static void main(String[] args) {
 
+            // 这个示例手写 RAG 的每一步，帮助理解框架封装背后的数据流。
             // In this very simple example, we are getting data that we want to use for RAG.
             // We will use a history about origin of the Llama by National Geographic https://www.nationalgeographic.es/animales/llama.
             Document document = loadDocument(toPath("example-files/story-about-origin-of-the-llama.txt"), new TextDocumentParser());
@@ -65,6 +66,7 @@ public class JlamaBasicRagEmbedExamples {
 
             // Now we can offer the relevant information as the context information within the prompt.
             // Here is a prompt template where we can include both the retrieved text and user question in the prompt.
+            // 检索出的片段会被拼进 prompt，模型只能基于这些上下文回答，降低凭空编造的概率。
             PromptTemplate promptTemplate = PromptTemplate.from(
                     "Context information is below.:\n"
                             + "------------------\n"

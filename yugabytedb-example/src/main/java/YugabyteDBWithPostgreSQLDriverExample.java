@@ -17,6 +17,10 @@ import java.util.List;
 /**
  * This example demonstrates using YugabyteDB with the PostgreSQL JDBC driver.
  *
+ * <p>中文说明：这个示例演示“用 PostgreSQL JDBC 驱动连接 YugabyteDB”，
+ * 适合已经熟悉 PostgreSQL 生态、希望把 YugabyteDB 当作兼容 PostgreSQL
+ * 的向量存储来使用的场景。
+ *
  * PostgreSQL JDBC driver is recommended for:
  * - Standard SQL operations
  * - Maximum PostgreSQL compatibility
@@ -44,7 +48,7 @@ public class YugabyteDBWithPostgreSQLDriverExample {
             System.out.println("Best for: Standard SQL operations and PostgreSQL compatibility");
             System.out.println();
 
-            // Create YugabyteDB engine with PostgreSQL JDBC driver
+            // 创建连接引擎：usePostgreSQLDriver(true) 表示走标准 PostgreSQL JDBC 驱动。
             engine = YugabyteDBEngine.builder()
                     .host(yugabyteContainer.getHost())
                     .port(yugabyteContainer.getMappedPort(5433))
@@ -62,7 +66,7 @@ public class YugabyteDBWithPostgreSQLDriverExample {
                     .createTableIfNotExists(true)
                     .build();
 
-            // Add some sample data
+            // 写入样例文本：每段文本先转成 embedding，再和原文一起存入 YugabyteDB。
             TextSegment segment1 = TextSegment.from("PostgreSQL driver provides excellent compatibility.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -75,7 +79,7 @@ public class YugabyteDBWithPostgreSQLDriverExample {
             Embedding embedding3 = embeddingModel.embed(segment3).content();
             embeddingStore.add(embedding3, segment3);
 
-            // Search for similar embeddings
+            // 查询流程同样先把问题向量化，再用该向量去找最相似的文本片段。
             Embedding queryEmbedding = embeddingModel.embed("Tell me about PostgreSQL compatibility").content();
 
             EmbeddingSearchRequest searchRequest = EmbeddingSearchRequest.builder()

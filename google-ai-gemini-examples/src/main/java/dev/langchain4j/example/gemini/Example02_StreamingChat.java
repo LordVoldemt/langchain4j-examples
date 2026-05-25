@@ -48,6 +48,7 @@ public class Example02_StreamingChat {
     };
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
+        // Streaming 模型会把增量内容交给 handler，完整 ChatResponse 仍可在完成后获取。
         var model = GoogleAiGeminiStreamingChatModel.builder()
                 .apiKey(System.getenv("GOOGLE_AI_GEMINI_API_KEY"))
                 .modelName("gemini-2.5-flash-lite")

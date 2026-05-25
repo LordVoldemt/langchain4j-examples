@@ -54,6 +54,7 @@ public class MenuItemsIngestor {
      * in the embedding store.
      */
     public void ingest() {
+        // 应用启动时调用一次，将菜单文本写入向量库，后续聊天可用这些内容做检索增强。
         // Create ingestor with given embedding model and embedding storage
         var ingestor = EmbeddingStoreIngestor.builder()
                 .embeddingModel(embeddingModel)

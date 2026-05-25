@@ -11,6 +11,7 @@ import java.nio.file.Path;
 public class GPULlama3ChatModelProvider {
 
     public static ChatModel createChatModel(boolean onGPU) {
+        // Agent 教程复用这个 provider，把“本地模型路径和 GPU/CPU 选择”集中到一个地方。
         return GPULlama3ChatModel.builder()
                 .modelPath(getModelPath())
                 .maxTokens(1500)
@@ -20,6 +21,7 @@ public class GPULlama3ChatModelProvider {
 
     private static Path getModelPath() {
         // Read path to your *local* model files.
+        // 只读取环境变量，不在示例中写死个人机器路径，便于不同开发者复用。
         String localLLMsPath = System.getenv("LOCAL_LLMS_PATH");
 
         // Check if the environment variable is set

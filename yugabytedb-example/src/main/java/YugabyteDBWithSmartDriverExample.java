@@ -15,13 +15,13 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * This example demonstrates using YugabyteDB with the YugabyteDB Smart Driver.
+ * 本示例演示使用 YugabyteDB Smart Driver 连接向量表。
  *
- * YugabyteDB Smart Driver is recommended for:
- * - Advanced distributed database features
- * - Topology-aware load balancing
- * - Node-aware connection management
- * - Multi-region deployments
+ * YugabyteDB Smart Driver 适合：
+ * - 高级分布式数据库特性
+ * - 感知拓扑的负载均衡
+ * - 节点级连接管理
+ * - 多地域部署
  */
 public class YugabyteDBWithSmartDriverExample {
 
@@ -31,6 +31,7 @@ public class YugabyteDBWithSmartDriverExample {
 
         try {
             DockerImageName dockerImageName = DockerImageName.parse("yugabytedb/yugabyte:2025.1.0.1-b3");
+            // 使用 Testcontainers 启动临时 YugabyteDB，示例通过 5433 端口连接。
             yugabyteContainer = new GenericContainer<>(dockerImageName)
                     .withExposedPorts(5433, 7000, 9000, 15433, 9042)
                     .withCommand("bin/yugabyted", "start", "--background=false")
@@ -45,7 +46,7 @@ public class YugabyteDBWithSmartDriverExample {
             System.out.println("Best for: Distributed deployments with topology-aware load balancing");
             System.out.println();
 
-            // Create YugabyteDB engine with Smart Driver
+            // usePostgreSQLDriver(false) 表示使用 YugabyteDB Smart Driver，适合分布式部署场景。
             engine = YugabyteDBEngine.builder()
                     .host(yugabyteContainer.getHost())
                     .port(yugabyteContainer.getMappedPort(5433))
@@ -56,6 +57,7 @@ public class YugabyteDBWithSmartDriverExample {
                     .maxPoolSize(10)
                     .build();
 
+            // 创建或复用向量表，表中保存 embedding、文本和内部标识。
             EmbeddingStore<TextSegment> embeddingStore = YugabyteDBEmbeddingStore.builder()
                     .engine(engine)
                     .tableName("smart_driver_embeddings")
@@ -63,7 +65,7 @@ public class YugabyteDBWithSmartDriverExample {
                     .createTableIfNotExists(true)
                     .build();
 
-            // Add some sample data
+            // 写入几条描述 Smart Driver 的示例文本及其 embedding。
             TextSegment segment1 = TextSegment.from("Smart Driver provides topology-aware load balancing.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -76,7 +78,7 @@ public class YugabyteDBWithSmartDriverExample {
             Embedding embedding3 = embeddingModel.embed(segment3).content();
             embeddingStore.add(embedding3, segment3);
 
-            // Search for similar embeddings
+            // 查询向量用于查找与“分布式数据库连接”语义最接近的文本。
             Embedding queryEmbedding = embeddingModel.embed("How do distributed databases handle connections?").content();
 
             EmbeddingSearchRequest searchRequest = EmbeddingSearchRequest.builder()
@@ -105,13 +107,13 @@ public class YugabyteDBWithSmartDriverExample {
             System.err.println("❌ Error running example: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // Give Testcontainers time to cleanup gracefully
+            // 给 Testcontainers 一点时间做容器清理，避免本地资源释放过快导致日志不完整。
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ignored) {
             }
             
-            // Cleanup resources
+            // 关闭数据库连接池并停止容器。
             System.out.println("🧹 Cleaning up resources...");
             if (engine != null) {
                 try {

@@ -28,6 +28,7 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
 
         try {
             DockerImageName dockerImageName = DockerImageName.parse("yugabytedb/yugabyte:2025.1.0.1-b3");
+            // 使用 Testcontainers 启动 YugabyteDB，示例连接其 PostgreSQL 兼容端口。
             yugabyteContainer = new GenericContainer<>(dockerImageName)
                     .withExposedPorts(5433, 7000, 9000, 15433, 9042)
                     .withCommand("bin/yugabyted", "start", "--background=false")
@@ -37,7 +38,7 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
-            // Create YugabyteDB engine with PostgreSQL driver
+            // 使用 PostgreSQL JDBC driver 连接临时 YugabyteDB 实例。
             engine = YugabyteDBEngine.builder()
                     .host(yugabyteContainer.getHost())
                     .port(yugabyteContainer.getMappedPort(5433))
@@ -47,11 +48,12 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
                     .usePostgreSQLDriver(true)
                     .build();
 
-            // Configure metadata storage (JSONB format)
+            // metadata 采用 JSONB 合并存储，适合灵活字段并支持过滤。
             MetadataStorageConfig metadataConfig = DefaultMetadataStorageConfig.builder()
                     .storageMode(MetadataStorageMode.COMBINED_JSONB)
                     .build();
 
+            // 创建带 metadata 配置的向量表，dimension 与 embedding 模型输出维度一致。
             EmbeddingStore<TextSegment> embeddingStore = YugabyteDBEmbeddingStore.builder()
                     .engine(engine)
                     .tableName("test_embeddings_with_metadata")
@@ -60,7 +62,7 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
                     .createTableIfNotExists(true)
                     .build();
 
-            // Add embeddings with metadata
+            // 写入文本、embedding 和 category/user metadata。
             TextSegment segment1 = TextSegment.from("I like football.", 
                     Metadata.from("category", "sports").put("user", "john"));
             Embedding embedding1 = embeddingModel.embed(segment1).content();
@@ -76,7 +78,7 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
             Embedding embedding3 = embeddingModel.embed(segment3).content();
             embeddingStore.add(embedding3, segment3);
 
-            // Search with metadata filter
+            // metadata 过滤会先限定 category=sports，再对候选向量做相似度排序。
             Embedding queryEmbedding = embeddingModel.embed("What sport do you like?").content();
 
             Filter categoryFilter = new IsEqualTo("category", "sports");
@@ -103,13 +105,13 @@ public class YugabyteDBEmbeddingStoreWithMetadataExample {
             System.err.println("❌ Error running example: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // Give Testcontainers time to cleanup gracefully
+            // 给 Testcontainers 一点时间做容器清理，避免本地资源释放过快导致日志不完整。
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ignored) {
             }
             
-            // Cleanup resources
+            // 关闭数据库连接池并停止容器。
             System.out.println("🧹 Cleaning up resources...");
             if (engine != null) {
                 try {

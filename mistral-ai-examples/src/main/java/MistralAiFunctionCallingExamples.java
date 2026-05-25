@@ -26,6 +26,7 @@ public class MistralAiFunctionCallingExamples {
 
         static ChatModel mistralAiModel = MistralAiChatModel.builder()
                 .apiKey(System.getenv("MISTRAL_AI_API_KEY")) // Please use your own Mistral AI API key
+                // 选择支持工具调用的 Mistral 模型，AiServices 才能自动规划并执行 @Tool 方法。
                 .modelName(MISTRAL_LARGE_LATEST)
                 .build();
 
@@ -64,6 +65,7 @@ public class MistralAiFunctionCallingExamples {
 
         static ChatModel mistralAiModel = MistralAiChatModel.builder()
                 .apiKey(System.getenv("MISTRAL_AI_API_KEY")) // Please use your own Mistral AI API key
+                // 手动工具调用时，模型会返回 ToolExecutionRequest，应用侧负责真正执行工具。
                 .modelName(MISTRAL_LARGE_LATEST)
                 .logRequests(true)
                 .logResponses(true)
@@ -75,6 +77,7 @@ public class MistralAiFunctionCallingExamples {
             // STEP 1: User specify tools and query
             // Tools
             Payment_Transaction_Tool paymentTool = Payment_Transaction_Tool.build();
+            // 将支付查询工具转换为 schema，随请求发送给模型用于参数生成。
             List<ToolSpecification> tools = ToolSpecifications.toolSpecificationsFrom(paymentTool);
             // User query
             List<ChatMessage> chatMessages = new ArrayList<>();

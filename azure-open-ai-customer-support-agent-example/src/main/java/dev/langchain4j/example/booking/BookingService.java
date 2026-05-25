@@ -20,12 +20,14 @@ public class BookingService {
     public void cancelBooking(String bookingNumber, String customerName, String customerSurname) {
         ensureExists(bookingNumber, customerName, customerSurname);
 
+        // 这里故意抛出“不可取消”异常，用来演示工具调用失败时 Agent 如何把业务原因反馈给用户。
         // Imitating cancellation
         throw new BookingCannotBeCancelledException(bookingNumber);
     }
 
     private void ensureExists(String bookingNumber, String customerName, String customerSurname) {
         // Imitating check
+        // 示例只承认一组固定测试数据；生产环境中这里通常会查询数据库或外部预订系统。
         if (!(bookingNumber.equals("123-456")
                 && customerName.equals("Klaus")
                 && customerSurname.equals("Heisler"))) {

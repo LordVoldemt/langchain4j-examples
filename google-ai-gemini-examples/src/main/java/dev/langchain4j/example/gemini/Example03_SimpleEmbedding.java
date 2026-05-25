@@ -21,6 +21,7 @@ import dev.langchain4j.model.output.Response;
 public class Example03_SimpleEmbedding {
 
     public static void main(String[] args) {
+        // embedding 模型把文本映射为固定维度向量；outputDimensionality 可按检索系统需求调整。
         GoogleAiEmbeddingModel model = GoogleAiEmbeddingModel.builder()
                 .apiKey(System.getenv("GOOGLE_AI_GEMINI_API_KEY"))
                 .modelName("gemini-embedding-001")

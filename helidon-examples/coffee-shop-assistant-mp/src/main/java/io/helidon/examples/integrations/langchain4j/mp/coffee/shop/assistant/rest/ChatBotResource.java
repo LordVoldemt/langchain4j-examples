@@ -47,6 +47,7 @@ public class ChatBotResource {
     @Path("/chat")
     @Counted
     public String chatWithAssistant(@QueryParam("question") String question) {
+        // Helidon MP 使用 JAX-RS 暴露 REST；Resource 只转发问题，AI 细节留给 ChatAiService。
         return chatAiService.chat(question);
     }
 }

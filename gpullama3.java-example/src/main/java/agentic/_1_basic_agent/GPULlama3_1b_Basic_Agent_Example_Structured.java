@@ -1,3 +1,4 @@
+// 中文说明：gpullama3.java 本地模型示例代码，用来演示本地模型聊天、流式输出或 Agent 工作流。
 package agentic._1_basic_agent;
 
 import _1_basic_agent.CvGeneratorStructuredOutput;

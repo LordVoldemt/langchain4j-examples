@@ -18,6 +18,7 @@ import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 public class EmbeddingStoreFactory implements Supplier<EmbeddingStore<TextSegment>> {
     @Override
     public EmbeddingStore<TextSegment> get() {
+        // Service Registry 会通过这个 Supplier 创建命名向量库，供 Ingestor 和 AI 服务共享。
         return new InMemoryEmbeddingStore<>();
     }
 }

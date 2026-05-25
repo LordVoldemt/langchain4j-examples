@@ -6,6 +6,10 @@ import dev.langchain4j.service.AiServices;
 
 import static java.time.Duration.ofSeconds;
 
+/**
+ * 这个示例学习动态工具：把外部执行环境注册给 AI Service，模型在需要计算时可以调用它。
+ * Judge0 需要 RAPID_API_KEY 环境变量；不要把真实 token 写入代码。
+ */
 public class ServiceWithDynamicToolsExample {
 
     interface Assistant {
@@ -15,6 +19,7 @@ public class ServiceWithDynamicToolsExample {
 
     public static void main(String[] args) {
 
+        // Judge0 工具会执行模型请求的 JavaScript，适合演示工具增强而不是让模型心算。
         Judge0JavaScriptExecutionTool judge0Tool = new Judge0JavaScriptExecutionTool(ApiKeys.RAPID_API_KEY);
 
         ChatModel chatModel = OpenAiChatModel.builder()

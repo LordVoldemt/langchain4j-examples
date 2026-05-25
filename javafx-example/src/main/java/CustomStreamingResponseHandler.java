@@ -14,6 +14,7 @@ public class CustomStreamingResponseHandler {
     }
 
     public void onNext(String token) {
+        // 模型回调线程不是 JavaFX UI 线程，必须通过 Platform.runLater 安全更新界面。
         Platform.runLater(() -> action.appendAnswer(token));
     }
 
@@ -27,6 +28,7 @@ public class CustomStreamingResponseHandler {
     }
 
     public void onError(Throwable error) {
+        // 错误也回到 UI 线程展示，避免后台异常让用户看不到反馈。
         Platform.runLater(() -> {
             LOGGER.error("Error while receiving answer: " + error.getMessage());
             action.appendAnswer("\nSomething went wrong: " + error.getMessage());

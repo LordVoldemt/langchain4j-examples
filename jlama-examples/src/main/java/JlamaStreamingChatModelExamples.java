@@ -1,3 +1,4 @@
+// 中文说明：Jlama 本地推理示例代码，用来演示本地模型能力和流式输出。
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;

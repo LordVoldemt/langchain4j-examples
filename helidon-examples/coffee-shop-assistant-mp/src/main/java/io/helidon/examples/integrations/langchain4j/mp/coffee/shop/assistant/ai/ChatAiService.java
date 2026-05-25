@@ -15,6 +15,8 @@ import dev.langchain4j.service.SystemMessage;
 @Ai.ChatMemoryWindow(10)
 public interface ChatAiService {
 
+    // @Ai.Service 让 Helidon/LangChain4j 为接口生成实现；调用 chat() 就会进入聊天模型。
+    // ChatMemoryWindow(10) 表示保留最近 10 条消息作为对话上下文。
     /**
      * Responds to a given question in a human-friendly manner.
      *

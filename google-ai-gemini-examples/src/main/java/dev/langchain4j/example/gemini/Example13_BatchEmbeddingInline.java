@@ -55,14 +55,14 @@ public class Example13_BatchEmbeddingInline {
         System.out.println("Batch created: " + batchName.value());
         System.out.println("Polling for completion...");
 
-        // Poll until complete
+        // Embedding batch 同样是异步任务，需要定时查询状态。
         do {
             Thread.sleep(5000);
             response = batchModel.retrieveBatchResults(batchName);
             System.out.println("  Status: " + response.getClass().getSimpleName());
         } while (response instanceof BatchIncomplete);
 
-        // Process results
+        // 每个结果都是一条文本对应的向量，可继续写入向量库。
         if (response instanceof BatchSuccess<?> success) {
             System.out.println("\nBatch completed successfully!");
             System.out.println("Embeddings:");

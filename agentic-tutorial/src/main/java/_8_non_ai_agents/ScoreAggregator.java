@@ -16,6 +16,8 @@ public class ScoreAggregator {
                              @V("managerReview") CvReview mgr,
                              @V("teamMemberReview") CvReview team) {
 
+        // 非 AI Agent 的好处是确定性强：平均分和拼接反馈不会受模型随机性影响。
+        // 它仍然通过 @V 读取 AgenticScope 中由上游 Agent 写入的状态。
         System.out.println("ScoreAggregator called with hrReview: " + hr +
                 ", managerReview: " + mgr +
                 ", teamMemberReview: " + team);

@@ -19,6 +19,7 @@ public class AzureOpenAiSecurityExamples {
             AzureOpenAiChatModel model = AzureOpenAiChatModel.builder()
                     .apiKey(System.getenv("AZURE_OPENAI_KEY"))
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+                    // 安全示例同样使用 deploymentName 定位 Azure 侧模型部署。
                     .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
                     .temperature(0.3)
                     .logRequestsAndResponses(true)
@@ -41,6 +42,7 @@ public class AzureOpenAiSecurityExamples {
             AzureOpenAiChatModel model = AzureOpenAiChatModel.builder()
                     .tokenCredential(new DefaultAzureCredentialBuilder().build())
                     .endpoint(System.getenv("AZURE_OPENAI_ENDPOINT"))
+                    // tokenCredential 使用 Entra ID/Azure Identity 鉴权，可替代直接传 apiKey。
                     .deploymentName(System.getenv("AZURE_OPENAI_DEPLOYMENT_NAME"))
                     .temperature(0.3)
                     .logRequestsAndResponses(true)

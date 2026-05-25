@@ -64,14 +64,14 @@ public class Example12_BatchChatInline {
         System.out.println("Batch created: " + batchName.value());
         System.out.println("Polling for completion...");
 
-        // Poll until complete
+        // 批处理是异步任务，需要轮询直到不再是 BatchIncomplete。
         do {
             Thread.sleep(5000);
             response = batchModel.retrieveBatchResults(batchName);
             System.out.println("  Status: " + response.getClass().getSimpleName());
         } while (response instanceof BatchIncomplete);
 
-        // Process results
+        // 成功后按提交顺序读取每条请求的结果。
         if (response instanceof BatchSuccess<?> success) {
             System.out.println("\nBatch completed successfully!");
             System.out.println("Results:");

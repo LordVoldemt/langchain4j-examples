@@ -9,6 +9,8 @@ import java.util.List;
 
 public class OrganizingTools {
 
+    // @Tool 会把普通 Java 方法暴露给模型调用；参数上的 @P 是给模型看的参数说明。
+    // 示例里只打印日志，不真正发送邮件或创建日历，避免教学代码产生真实副作用。
     @Tool
     public Date getCurrentDate(){
         return new Date();

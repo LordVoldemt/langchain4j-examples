@@ -7,6 +7,10 @@ import dev.langchain4j.service.AiServices;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.time.Duration.ofSeconds;
 
+/**
+ * 这个示例学习动态工具：运行时接入外部工具服务，让模型把一部分任务交给工具完成。
+ * Judge0 需要 RAPID_API_KEY；请通过环境变量配置，不要把真实 token 写进代码。
+ */
 public class _11_ServiceWithDynamicToolsExample {
 
     interface Assistant {
@@ -16,6 +20,7 @@ public class _11_ServiceWithDynamicToolsExample {
 
     public static void main(String[] args) {
 
+        // 这个工具会把 JavaScript 代码交给 Judge0 执行，适合演示“模型负责规划，工具负责计算”。
         Judge0JavaScriptExecutionTool judge0Tool = new Judge0JavaScriptExecutionTool(ApiKeys.RAPID_API_KEY);
 
         ChatModel chatModel = OpenAiChatModel.builder()

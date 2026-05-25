@@ -13,6 +13,7 @@ import static dev.langchain4j.model.openai.OpenAiAudioTranscriptionModelName.WHI
 public class OpenAiAudioModelExamples {
 
     public static void main(String[] args) {
+        // 音频转写模型和聊天模型是不同端点；modelName 这里选择 Whisper 系列转写模型。
         AudioTranscriptionModel model = OpenAiAudioTranscriptionModel.builder()
                 .apiKey(ApiKeys.OPENAI_API_KEY)
                 .modelName(WHISPER_1)
@@ -22,6 +23,7 @@ public class OpenAiAudioModelExamples {
 
         AudioTranscriptionResponse response = model.transcribe(AudioTranscriptionRequest.builder()
                 .audio(Audio.builder()
+                        // 提供正确的 MIME type，服务端才能按对应音频格式解析 binaryData。
                         .mimeType("audio/wav") // required
                         .binaryData(toBytes("audio.wav")).build())
                 .build());

@@ -33,6 +33,7 @@ class OllamaChatModelTest extends AbstractOllamaInfrastructure {
     void simple_example() {
 
         ChatModel chatModel = OllamaChatModel.builder()
+                // baseUrl 指向本地或 Testcontainers 启动的 Ollama 服务；modelName 是本地已拉取的模型名。
                 .baseUrl(ollamaBaseUrl(ollama))
                 .modelName(MODEL_NAME)
                 .logRequests(true)
@@ -59,6 +60,7 @@ class OllamaChatModelTest extends AbstractOllamaInfrastructure {
                 .baseUrl(ollamaBaseUrl(ollama))
                 .modelName(MODEL_NAME)
                 .temperature(0.0)
+                // 声明支持 JSON schema 后，AiServices 才能要求模型按 Java record 结构返回。
                 .supportedCapabilities(RESPONSE_FORMAT_JSON_SCHEMA)
                 .logRequests(true)
                 .build();
@@ -83,6 +85,7 @@ class OllamaChatModelTest extends AbstractOllamaInfrastructure {
 
         ResponseFormat responseFormat = ResponseFormat.builder()
                 .type(ResponseFormatType.JSON)
+                // 低层 API 需要显式描述 JSON schema，模型会按该结构输出可解析 JSON。
                 .jsonSchema(JsonSchema.builder()
                         .rootElement(JsonObjectSchema.builder()
                                 .addStringProperty("name")

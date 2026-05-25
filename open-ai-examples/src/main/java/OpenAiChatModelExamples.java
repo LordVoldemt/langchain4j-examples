@@ -16,6 +16,7 @@ public class OpenAiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // ChatModel 是最常见的同步文本调用入口：apiKey 用于鉴权，modelName 决定实际调用的 OpenAI 模型。
             ChatModel chatModel = OpenAiChatModel.builder()
                     .apiKey(ApiKeys.OPENAI_API_KEY)
                     .modelName(GPT_4_O_MINI)
@@ -31,6 +32,7 @@ public class OpenAiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // 支持视觉输入的模型可以同时接收文本和图片；maxTokens 限制本次回答最多生成的 token 数。
             ChatModel chatModel = OpenAiChatModel.builder()
                     .apiKey(ApiKeys.OPENAI_API_KEY) // Please use your own OpenAI API key
                     .modelName(GPT_4_O_MINI)
@@ -39,6 +41,7 @@ public class OpenAiChatModelExamples {
 
             UserMessage userMessage = UserMessage.from(
                     TextContent.from("What do you see?"),
+                    // 图片可以通过 URL 传入，也可以在其他示例中用 base64/binaryData 传入。
                     ImageContent.from("https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png")
             );
 
@@ -61,6 +64,7 @@ public class OpenAiChatModelExamples {
 
             ChatModel chatModel = OpenAiChatModel.builder()
                     .apiKey(ApiKeys.OPENAI_API_KEY)
+                    // defaultRequestParameters 是模型级默认值，单次 ChatRequest 中的 parameters 会覆盖同名字段。
                     .defaultRequestParameters(defaultParameters)
                     .logRequests(true)
                     .build();
@@ -96,6 +100,7 @@ public class OpenAiChatModelExamples {
 
             ChatModel chatModel = OpenAiChatModel.builder()
                     .apiKey(ApiKeys.OPENAI_API_KEY)
+                    // OpenAiChatRequestParameters 可混合通用参数和 OpenAI 专属参数，例如 seed。
                     .defaultRequestParameters(defaultParameters)
                     .logRequests(true)
                     .build();

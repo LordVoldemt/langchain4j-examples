@@ -12,6 +12,10 @@ import java.util.concurrent.CompletableFuture;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.time.Duration.ofSeconds;
 
+/**
+ * 这个示例学习 few-shot prompting：把少量“用户输入 -> 期望回复”的样例放进历史消息中。
+ * 模型会模仿这些样例的格式和决策方式，但样例越多，上下文 token 和调用成本也越高。
+ */
 public class _06_FewShot {
 
     public static void main(String[] args) {
@@ -22,6 +26,7 @@ public class _06_FewShot {
                 .timeout(ofSeconds(100))
                 .build();
 
+        // fewShotHistory 不是真实聊天记录，而是用来教模型输出风格和分类规则的示例上下文。
         List<ChatMessage> fewShotHistory = new ArrayList<>();
 
         // Adding positive feedback example to history

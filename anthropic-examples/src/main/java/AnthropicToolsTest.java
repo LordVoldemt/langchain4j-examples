@@ -15,6 +15,7 @@ class AnthropicToolsTest {
     ChatModel model = AnthropicChatModel.builder()
             // API key can be created here: https://console.anthropic.com/settings/keys
             .apiKey(System.getenv("ANTHROPIC_API_KEY"))
+            // 选择支持 tools 的 Claude 模型，LangChain4j 会把 @Tool 方法描述发送给模型。
             .modelName(CLAUDE_HAIKU_4_5_20251001)
             .logRequests(true)
             .logResponses(true)
@@ -46,6 +47,7 @@ class AnthropicToolsTest {
 
         AiService aiService = AiServices.builder(AiService.class)
                 .chatModel(model)
+                // 高层 AiServices 会自动处理工具选择、执行和把工具结果回传给模型。
                 .tools(new Tools())
                 .build();
 

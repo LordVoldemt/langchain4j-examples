@@ -34,6 +34,7 @@ public class Example07_EmbeddingWithTaskTypes {
         String apiKey = System.getenv("GOOGLE_AI_GEMINI_API_KEY");
 
         // Embedding for a search query
+        // taskType 会告诉 Gemini 这批向量用于查询、文档还是相似度比较，有助于提升检索效果。
         GoogleAiEmbeddingModel queryModel = GoogleAiEmbeddingModel.builder()
                 .apiKey(apiKey)
                 .modelName("gemini-embedding-001")

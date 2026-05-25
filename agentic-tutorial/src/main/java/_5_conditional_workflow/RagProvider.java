@@ -23,6 +23,8 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 public class RagProvider {
 
     public static ContentRetriever loadHouseRulesRetriever() {
+        // RAG 的最小链路：加载文档 -> 切分文本 -> 生成向量 -> 存入向量库 -> 查询时检索相关片段。
+        // 这里使用内存向量库和本地 embedding 模型，方便示例运行且不需要外部数据库。
         Document doc = loadDocument(toPath("documents/house_rules.txt"));
         EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
         InMemoryEmbeddingStore<TextSegment> store = new InMemoryEmbeddingStore<>();
@@ -48,6 +50,7 @@ public class RagProvider {
             URL fileUrl = Utils.class.getClassLoader().getResource(relativePath);
             return Paths.get(fileUrl.toURI());
         } catch (URISyntaxException e) {
+            // 示例代码把资源路径异常包装成运行时异常，让调用方不必在 RAG 初始化处处理 checked exception。
             throw new RuntimeException(e);
         }
     }

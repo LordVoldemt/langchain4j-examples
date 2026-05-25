@@ -13,6 +13,7 @@ package shared;
  * to your specific use case.
  * <br>
  * More info here: https://docs.langchain4j.dev/tutorials/ai-services
+ * 中文提示：RAG 示例复用这个接口，让不同示例只关注“如何检索和增强”，而不用重复定义助手方法。
  */
 public interface Assistant {
 

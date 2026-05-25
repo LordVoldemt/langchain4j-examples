@@ -24,6 +24,7 @@ public class GPULlama3_2a_Sequential_Agent_Example {
         boolean useGPU = args[0].equalsIgnoreCase("GPU");
 
         // 1. Define the model that will power the agent
+        // 与云模型版本的 Agent 编排相同，这里只替换底层 ChatModel 为本地 GPULlama3。
         final ChatModel CHAT_MODEL = GPULlama3ChatModelProvider.createChatModel(useGPU);
 
         // 2. Define the two sub-agents in this package:
@@ -52,6 +53,7 @@ public class GPULlama3_2a_Sequential_Agent_Example {
         UntypedAgent tailoredCvGenerator = AgenticServices // use UntypedAgent unless you define the resulting composed agent, see below
                 .sequenceBuilder()
                 .subAgents(cvGenerator, cvTailor) // this can be as many as you want, order matters
+                // 本地模型也能复用 AgenticScope 的 key 传递机制：masterCv 先写入，再由 CvTailor 读取。
                 .outputKey("tailoredCv") // this is the final output of the composed agent
                 // note that you can use as output any field that is part of the AgenticScope
                 // for example you could output 'masterCv' instead of tailoredCv (even if in this case that makes no sense)

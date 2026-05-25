@@ -23,6 +23,7 @@ import java.util.List;
 public class Example04_TokenCounting {
 
     public static void main(String[] args) {
+        // token counting 不生成回答，只估算请求会消耗多少 token，适合调用前做预算控制。
         GoogleAiGeminiTokenCountEstimator tokenEstimator = GoogleAiGeminiTokenCountEstimator.builder()
                 .apiKey(System.getenv("GOOGLE_AI_GEMINI_API_KEY"))
                 .modelName("gemini-2.5-flash-lite")

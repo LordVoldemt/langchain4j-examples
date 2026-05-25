@@ -9,6 +9,7 @@ public class MistralAiChatModelExamples {
 
         public static void main(String[] args) {
 
+            // Mistral 示例从环境变量读取 API key；modelName 选择 Mistral 托管的聊天模型。
             ChatModel model = MistralAiChatModel.builder()
                     .apiKey(System.getenv("MISTRAL_AI_API_KEY")) // Please use your own Mistral AI API key
                     .modelName(MISTRAL_SMALL_LATEST)

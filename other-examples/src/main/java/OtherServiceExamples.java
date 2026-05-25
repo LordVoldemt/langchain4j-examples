@@ -15,6 +15,10 @@ import java.util.function.Function;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个文件集中演示 AI Service 的更多返回类型和注解用法。
+ * 新手重点看：接口方法的返回类型会指导 LangChain4j 解析模型输出，注解会生成 system/user prompt。
+ */
 public class OtherServiceExamples {
 
     static ChatModel chatModel = OpenAiChatModel.builder()
@@ -39,6 +43,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // 返回 enum/boolean 时，AI Service 会尝试把模型输出解析成对应 Java 类型。
             SentimentAnalyzer sentimentAnalyzer = AiServices.create(SentimentAnalyzer.class, chatModel);
 
             Sentiment sentiment = sentimentAnalyzer.analyzeSentimentOf("It is good!");
@@ -75,6 +80,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // 同一段文本可以按不同数字类型解析，适合抽取结构化字段而不是自由文本回答。
             NumberExtractor extractor = AiServices.create(NumberExtractor.class, chatModel);
 
             String text = "After countless millennia of computation, the supercomputer Deep Thought finally announced " +
@@ -117,6 +123,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // 日期时间抽取依赖模型理解文本中的时间表达，真实业务要处理时区和格式校验。
             DateTimeExtractor extractor = AiServices.create(DateTimeExtractor.class, chatModel);
 
             String text = "The tranquility pervaded the evening of 1968, just fifteen minutes shy of midnight," +
@@ -169,6 +176,7 @@ public class OtherServiceExamples {
                     // (e.g., OpenAI, Azure OpenAI, Vertex AI Gemini, Ollama, etc.),
                     // it is advisable to enable it (json mode) to get more reliable results.
                     // When using this feature, LLM will be forced to output a valid JSON.
+                    // 结构化输出建议启用 JSON schema，让模型输出更容易被反序列化成 POJO。
                     .responseFormat("json_schema")
                     .strictJsonSchema(true) // https://docs.langchain4j.dev/integrations/language-models/open-ai#structured-outputs-for-json-mode
                     .logRequests(true)
@@ -244,6 +252,7 @@ public class OtherServiceExamples {
                     .logResponses(true)
                     .build();
 
+            // @Description 给字段补充语义约束，能提升生成复杂 POJO 时的稳定性。
             Chef chef = AiServices.create(Chef.class, chatModel);
 
             Recipe recipe = chef.createRecipeFrom("cucumber", "tomato", "feta", "onion", "olives");
@@ -305,6 +314,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // @V 明确参数名，避免方法参数名在编译后不可用时模板变量无法匹配。
             TextUtils utils = AiServices.create(TextUtils.class, chatModel);
 
             String translation = utils.translate("Hello, how are you?", "italian");
@@ -337,6 +347,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // fromResource 适合把较长 prompt 放到 resources 文件中，便于非代码方式维护。
             TextUtils utils = AiServices.create(TextUtils.class, chatModel);
 
             String translation = utils.translate("Hello, how are you?", "italian");
@@ -370,6 +381,7 @@ public class OtherServiceExamples {
 
         public static void main(String[] args) {
 
+            // systemMessageProvider 可以按 memoryId 动态生成系统消息，适合用户偏好或租户配置不同的场景。
             Function<Object, String> systemMessageProvider = (memoryId) -> {
                 if (memoryId.equals("1")) {
                     return "You are a helpful assistant. The user prefers to be called 'Your Majesty'.";

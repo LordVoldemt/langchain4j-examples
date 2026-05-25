@@ -17,6 +17,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static dev.langchain4j.model.openai.OpenAiLanguageModelName.GPT_3_5_TURBO_INSTRUCT;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个文件对比两种流式 API：聊天模型按 ChatMessage 工作，语言模型按普通文本 prompt 工作。
+ * 两者都依赖异步回调，示例用 CompletableFuture 等待最终响应，避免 main 提前退出。
+ */
 public class StreamingExamples {
 
     static class StreamingChatModel_Example {
@@ -34,6 +38,7 @@ public class StreamingExamples {
                     userMessage("Tell me a joke")
             );
 
+            // futureChatResponse 用来把回调式 API 转成可等待的流程，方便命令行示例演示。
             CompletableFuture<ChatResponse> futureChatResponse = new CompletableFuture<>();
 
             model.chat(messages, new StreamingChatResponseHandler() {
@@ -68,6 +73,7 @@ public class StreamingExamples {
                     .modelName(GPT_3_5_TURBO_INSTRUCT)
                     .build();
 
+            // LanguageModel 的流式回调返回 token 字符串，完成时返回完整 Response。
             CompletableFuture<Response<String>> futureResponse = new CompletableFuture<>();
 
             model.generate("Tell me a joke", new StreamingResponseHandler<>() {

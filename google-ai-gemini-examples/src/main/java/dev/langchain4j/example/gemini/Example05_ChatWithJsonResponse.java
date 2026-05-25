@@ -31,6 +31,7 @@ import java.util.List;
 public class Example05_ChatWithJsonResponse {
 
     public static void main(String[] args) {
+        // 这里先创建普通聊天模型，结构化 JSON 约束会在单次 ChatRequest 的 responseFormat 中指定。
         ChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(System.getenv("GOOGLE_AI_GEMINI_API_KEY"))
                 .modelName("gemini-2.5-flash-lite")
@@ -46,6 +47,7 @@ public class Example05_ChatWithJsonResponse {
                 .required("name", "age", "occupation", "hobbies")
                 .build();
 
+        // responseFormat 让模型按 JSON 输出，便于后续用程序解析而不是处理自然语言。
         ResponseFormat responseFormat = ResponseFormat.builder()
                 .type(ResponseFormat.JSON.type())
                 .jsonSchema(JsonSchema.builder().name("person").rootElement(personSchema).build())

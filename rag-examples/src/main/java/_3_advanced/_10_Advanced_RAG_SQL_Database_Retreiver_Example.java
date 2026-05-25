@@ -20,6 +20,10 @@ import java.sql.Statement;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习 SQL retriever，让模型把自然语言问题转成 SQL 查询数据库。
+ * 这类能力风险较高，示例只适合本地 H2 演示；真实环境必须使用只读、低权限账号并做审计。
+ */
 public class _10_Advanced_RAG_SQL_Database_Retreiver_Example {
 
 
@@ -58,6 +62,7 @@ public class _10_Advanced_RAG_SQL_Database_Retreiver_Example {
                 .modelName(GPT_4_O_MINI)
                 .build();
 
+        // SqlDatabaseContentRetriever 会借助 chatModel 生成 SQL，再把查询结果作为 RAG 内容。
         ContentRetriever contentRetriever = SqlDatabaseContentRetriever.builder()
                 .dataSource(dataSource)
                 .chatModel(chatModel)

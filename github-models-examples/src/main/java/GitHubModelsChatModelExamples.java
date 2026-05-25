@@ -8,6 +8,7 @@ public class GitHubModelsChatModelExamples {
 
         public static void main(String[] args) {
 
+            // GitHub Models 使用 GitHub token 鉴权；modelName 选择 GitHub Models 平台上暴露的具体模型。
             GitHubModelsChatModel model = GitHubModelsChatModel.builder()
                     .gitHubToken(System.getenv("GITHUB_TOKEN"))
                     .modelName(GPT_4_O_MINI)

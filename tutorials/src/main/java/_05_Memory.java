@@ -14,6 +14,10 @@ import java.util.concurrent.ExecutionException;
 import static dev.langchain4j.data.message.UserMessage.userMessage;
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
+/**
+ * 这个示例学习低层 ChatMemory：手动把 system、user、AI 消息加入记忆，再把完整消息列表发给模型。
+ * TokenWindowChatMemory 会按 token 数控制上下文大小，避免历史对话过长导致请求失败或费用过高。
+ */
 public class _05_Memory {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -23,6 +27,7 @@ public class _05_Memory {
                 .modelName(GPT_4_O_MINI)
                 .build();
 
+        // TokenWindowChatMemory 需要 token 估算器，因为不同模型的 token 计算方式可能不同。
         ChatMemory chatMemory = TokenWindowChatMemory.withMaxTokens(1000, new OpenAiTokenCountEstimator(GPT_4_O_MINI));
 
         SystemMessage systemMessage = SystemMessage.from(
@@ -77,6 +82,7 @@ public class _05_Memory {
             }
         };
 
+        // 这里传入的是完整消息历史，而不是单条 prompt，模型才能理解上一轮回答。
         model.chat(chatMemory.messages(), handler);
         return futureAiMessage.get();
     }

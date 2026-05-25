@@ -10,6 +10,10 @@ import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 
 import java.util.List;
 
+/**
+ * 这个示例学习内存向量库：把文本片段和 embedding 一起保存，再按语义相似度检索。
+ * InMemoryEmbeddingStore 适合教学和小数据实验，生产环境通常换成专用向量数据库。
+ */
 public class InMemoryEmbeddingStoreExample {
 
     public static void main(String[] args) {
@@ -27,6 +31,7 @@ public class InMemoryEmbeddingStoreExample {
         embeddingStore.add(embedding2, segment2);
 
         Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
+        // 搜索时用“问题”的向量和已存片段向量比较，分数越高表示语义越接近。
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)
                 .maxResults(1)

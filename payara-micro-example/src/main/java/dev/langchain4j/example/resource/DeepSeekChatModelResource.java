@@ -26,6 +26,7 @@ public class DeepSeekChatModelResource {
 
     @PostConstruct
     public void init() {
+        // DeepSeek 使用 OpenAI 兼容接口，所以通过 baseUrl 切换到 DeepSeek 服务地址。
         chatModel = OpenAiChatModel.builder()
                 .apiKey(deepseekApiKey)
                 .baseUrl("https://api.deepseek.com")
@@ -38,6 +39,7 @@ public class DeepSeekChatModelResource {
     @Path("chat")
     @Produces(MediaType.TEXT_PLAIN)
     public String chat(@QueryParam("message") @DefaultValue("What can you tell me about reasoning?") String message) {
+        // 对调用方来说仍是普通 REST GET；模型供应商差异被封装在 chatModel 中。
         return chatModel.chat(message);
     }
 }

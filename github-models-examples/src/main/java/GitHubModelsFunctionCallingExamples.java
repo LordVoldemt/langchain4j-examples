@@ -33,6 +33,7 @@ public class GitHubModelsFunctionCallingExamples {
 
         static GitHubModelsChatModel model = GitHubModelsChatModel.builder()
                 .gitHubToken(System.getenv("GITHUB_TOKEN"))
+                // 这里的模型需要支持 tool/function calling，否则不会返回 toolExecutionRequests。
                 .modelName(GPT_4_O_MINI)
                 .logRequestsAndResponses(true)
                 .build();
@@ -42,6 +43,7 @@ public class GitHubModelsFunctionCallingExamples {
             // STEP 1: User specify tools and query
             // Tools
             WeatherTools weatherTools = new WeatherTools();
+            // @Tool 注解的方法会生成工具定义，发送给模型用于参数规划。
             List<ToolSpecification> toolSpecifications = ToolSpecifications.toolSpecificationsFrom(weatherTools);
             // User query
             List<ChatMessage> chatMessages = new ArrayList<>();
@@ -55,6 +57,7 @@ public class GitHubModelsFunctionCallingExamples {
 
             // STEP 2: Model generate function arguments
             AiMessage aiMessage = model.chat(request).aiMessage();
+            // 模型返回的是工具调用请求；执行外部函数和处理副作用仍由应用侧负责。
             List<ToolExecutionRequest> toolExecutionRequests = aiMessage.toolExecutionRequests();
             System.out.println("Out of the " + toolSpecifications.size() + " functions declared in WeatherTools, " + toolExecutionRequests.size() + " will be invoked:");
             toolExecutionRequests.forEach(toolExecutionRequest -> {
@@ -69,6 +72,7 @@ public class GitHubModelsFunctionCallingExamples {
                 ToolExecutor toolExecutor = new DefaultToolExecutor(weatherTools, toolExecutionRequest);
                 System.out.println("Now let's execute the function " + toolExecutionRequest.name());
                 String result = toolExecutor.execute(toolExecutionRequest, UUID.randomUUID().toString());
+                // 工具结果必须作为消息加入上下文，模型第二轮才能生成面向用户的最终回答。
                 ToolExecutionResultMessage toolExecutionResultMessages = ToolExecutionResultMessage.from(toolExecutionRequest, result);
                 chatMessages.add(toolExecutionResultMessages);
             });

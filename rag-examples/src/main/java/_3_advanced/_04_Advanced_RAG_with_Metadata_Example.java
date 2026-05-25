@@ -28,6 +28,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.util.Arrays.asList;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习给文档片段附加 metadata，例如来源文件名、业务字段或权限信息。
+ * metadata 不直接改变语义向量，但能在返回来源、过滤和调试时提供重要上下文。
+ */
 public class _04_Advanced_RAG_with_Metadata_Example {
 
     /**
@@ -55,6 +59,7 @@ public class _04_Advanced_RAG_with_Metadata_Example {
 
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
 
+        // Ingestor 会把 Document 的 metadata 传播到 TextSegment，后续检索结果可带回来源信息。
         EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
                 .documentSplitter(DocumentSplitters.recursive(300, 0))
                 .embeddingModel(embeddingModel)

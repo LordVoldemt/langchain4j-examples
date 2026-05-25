@@ -25,10 +25,10 @@ public class JVectorEmbeddingStoreExample {
 
         File tempPath = new File(TMP_JVECTOR_EMBEDDING_STORE);
         try {
-            // Create the default embedding model
+            // 使用量化 embedding 模型，输出维度为 384，需与 JVector store 的 dimension 保持一致。
             EmbeddingModel embeddingModel = new AllMiniLmL6V2QuantizedEmbeddingModel();
 
-            // Read all lines from the text file once
+            // 读取资源文件中的每一行文本，后续将逐行写入本地向量索引。
             if (JVectorEmbeddingStoreExample.class.getClassLoader().getResource(TEST_DOCUMENT) == null) {
                 throw new RuntimeException("Test document not found: " + TEST_DOCUMENT);
             }
@@ -44,7 +44,7 @@ public class JVectorEmbeddingStoreExample {
             }
             File indexPath = new File(tempPath, "example-index");
 
-            // First store: JVector with maxDegree 16
+            // 第一个 store 使用内存索引，maxDegree 会影响图索引的连接密度和检索性能。
             EmbeddingStore<TextSegment> jvectorStore1 = JVectorEmbeddingStore.builder()
                     .dimension(384)
                     .maxDegree(16)
@@ -52,7 +52,7 @@ public class JVectorEmbeddingStoreExample {
 
             runWithStore(jvectorStore1, embeddingModel, lines, "JVectorStore(maxDegree=16)");
 
-            // Second store: JVector with a different configuration (maxDegree 8)
+            // 第二个 store 演示持久化索引，persistencePath 指向本地临时目录。
             EmbeddingStore<TextSegment> jvectorStore2 = JVectorEmbeddingStore.builder()
                     .dimension(384)
                     .maxDegree(8)
@@ -63,7 +63,7 @@ public class JVectorEmbeddingStoreExample {
         } catch (Exception e) {
             System.err.println("Failed to run the example due to: " + e.getMessage());
         } finally {
-            // Clean up the temporary index directory
+            // 清理本地持久化索引目录，避免示例多次运行留下临时文件。
             if (tempPath.exists() && tempPath.isDirectory()) {
                 final File[] files = tempPath.listFiles();
                 if (files != null) {
@@ -91,6 +91,7 @@ public class JVectorEmbeddingStoreExample {
         int added = 0;
         for (String line : lines) {
             if (!line.trim().isEmpty()) {
+                // 每一行文本都作为一个 TextSegment 写入，embedding 用于后续近邻检索。
                 TextSegment segment = TextSegment.from(line);
                 Embedding embedding = embeddingModel.embed(segment).content();
                 embeddingStore.add(embedding, segment);
@@ -111,6 +112,7 @@ public class JVectorEmbeddingStoreExample {
             String randomLine = lines.get(random.nextInt(lines.size()));
             System.out.println("\nQuery " + (i + 1) + ": " + randomLine);
 
+            // 使用随机文本本身生成查询向量，检验索引能否找回语义相近的行。
             Embedding queryEmbedding = embeddingModel.embed(randomLine).content();
 
             EmbeddingSearchRequest searchRequest = EmbeddingSearchRequest.builder()

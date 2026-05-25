@@ -6,6 +6,10 @@ import dev.langchain4j.service.AiServices;
 
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 
+/**
+ * 这个示例学习静态工具调用：把本地 Java 方法通过 @Tool 暴露给模型。
+ * 工具描述会影响模型何时调用方法，真实应用中要避免暴露有副作用或高权限的操作。
+ */
 public class ServiceWithToolsExample {
 
     // Please also check CustomerSupportApplication and CustomerSupportApplicationTest
@@ -45,6 +49,7 @@ public class ServiceWithToolsExample {
                 .strictTools(true) // https://docs.langchain4j.dev/integrations/language-models/open-ai#structured-outputs-for-tools
                 .build();
 
+        // tools(new Calculator()) 只注册该对象中带 @Tool 的方法，普通方法不会被模型调用。
         Assistant assistant = AiServices.builder(Assistant.class)
                 .chatModel(model)
                 .tools(new Calculator())

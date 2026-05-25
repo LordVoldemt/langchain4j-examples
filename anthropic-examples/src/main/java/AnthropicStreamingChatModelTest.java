@@ -14,6 +14,7 @@ class AnthropicStreamingChatModelTest {
     StreamingChatModel model = AnthropicStreamingChatModel.builder()
             // API key can be created here: https://console.anthropic.com/settings/keys
             .apiKey(System.getenv("ANTHROPIC_API_KEY"))
+            // StreamingChatModel 会把 Claude 的增量输出交给回调处理，而不是一次性返回完整字符串。
             .modelName("claude-3-haiku-20240307")
             .logRequests(true)
             // Other parameters can be set as well

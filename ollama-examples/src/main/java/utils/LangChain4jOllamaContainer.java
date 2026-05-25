@@ -27,6 +27,7 @@ public class LangChain4jOllamaContainer extends OllamaContainer {
     protected void containerIsStarted(InspectContainerResponse containerInfo) {
         if (this.model != null) {
             try {
+                // 容器启动后预拉取模型，测试里的 modelName 才能直接用于推理请求。
                 log.info("Start pulling the '{}' model ... would take several minutes ...", this.model);
                 ExecResult r = execInContainer("ollama", "pull", this.model);
                 log.info("Model pulling competed! {}", r);

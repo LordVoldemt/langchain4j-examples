@@ -39,6 +39,7 @@ public class MenuItemsService {
     public List<MenuItem> getMenuItems() {
         var objectMapper = new ObjectMapper();
         try {
+            // 这里读取的是应用数据，不是模型响应；随后会被 MenuItemsIngestor 转成 embedding。
             return objectMapper.readValue(jsonPath.toFile(), new TypeReference<>() {});
         } catch (IOException e) {
             throw new RuntimeException("Failed to read menu items from file: " + jsonPath, e);

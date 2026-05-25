@@ -27,6 +27,8 @@ public class JlamaAiFunctionCallingExamples {
                 .build();
 
         interface Assistant {
+            // AiServices 会根据接口和 @SystemMessage 创建代理；当模型判断需要查交易数据时，
+            // 会选择下方 @Tool 方法，而不是让模型凭记忆猜测付款状态。
             @SystemMessage({
                     "You are a payment transaction support agent.",
                     "You MUST use the payment transaction tool to search the payment transaction data.",
@@ -62,6 +64,8 @@ public class JlamaAiFunctionCallingExamples {
             return new Payment_Transaction_Tool();
         }
 
+        // @Tool 的描述和 @P 的参数说明会提供给模型，影响它选择哪个函数以及如何填参数。
+        // 这里用静态内存数据模拟真实支付系统，便于观察 function calling 的完整闭环。
         // Tool to be executed by mistral model to get payment status
         @Tool("Get payment status of a transaction") // function description
         static String retrievePaymentStatus(@P("Transaction id to search payment data") String transactionId) {

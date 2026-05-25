@@ -15,21 +15,23 @@ public class WeaviateEmbeddingStoreExample {
     public static void main(String[] args) {
 
         try (WeaviateContainer weaviate = new WeaviateContainer("semitechnologies/weaviate:1.22.4")) {
+            // Testcontainers 启动临时 Weaviate，示例通过 HTTP 地址连接。
             weaviate.start();
+            // objectClass 对应 Weaviate class，用于保存向量和文本对象。
             EmbeddingStore<TextSegment> embeddingStore = WeaviateEmbeddingStore.builder()
                     .scheme("http")
                     .host(weaviate.getHttpHostAddress())
-                    // "Default" class is used if not specified. Must start from an uppercase letter!
+                    // 未指定时使用 "Default" class；Weaviate class 名必须以大写字母开头。
                     .objectClass("Test")
-                    // If true (default), then WeaviateEmbeddingStore will generate a hashed ID based on provided
-                    // text segment, which avoids duplicated entries in DB. If false, then random ID will be generated.
+                    // true 时根据文本生成稳定哈希 ID，避免同一文本重复入库；false 则生成随机 ID。
                     .avoidDups(true)
-                    // Consistency level: ONE, QUORUM (default) or ALL.
+                    // 一致性级别可选 ONE、QUORUM（默认）或 ALL。
                     .consistencyLevel("ALL")
                     .build();
 
             EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+            // 写入文本和 embedding 到 Weaviate class。
             TextSegment segment1 = TextSegment.from("I like football.");
             Embedding embedding1 = embeddingModel.embed(segment1).content();
             embeddingStore.add(embedding1, segment1);
@@ -38,6 +40,7 @@ public class WeaviateEmbeddingStoreExample {
             Embedding embedding2 = embeddingModel.embed(segment2).content();
             embeddingStore.add(embedding2, segment2);
 
+            // 查询向量在 Weaviate 中检索最相似对象，并返回保存的原文。
             Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
             EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                     .queryEmbedding(queryEmbedding)

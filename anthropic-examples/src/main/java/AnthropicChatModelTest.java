@@ -19,6 +19,7 @@ class AnthropicChatModelTest {
     ChatModel model = AnthropicChatModel.builder()
             // API key can be created here: https://console.anthropic.com/settings/keys
             .apiKey(System.getenv("ANTHROPIC_API_KEY"))
+            // modelName 决定 Claude 的具体版本；不同版本支持的视觉、缓存和上下文能力可能不同。
             .modelName("claude-3-haiku-20240307")
             .logRequests(true)
             .logResponses(true)
@@ -39,6 +40,7 @@ class AnthropicChatModelTest {
         byte[] image = readBytes("https://docs.langchain4j.dev/img/langchain4j-components.png");
         String base64EncodedImage = Base64.getEncoder().encodeToString(image);
 
+        // Anthropic 视觉输入这里以 base64 + MIME type 传入，和纯文本消息一起组成 UserMessage。
         UserMessage userMessage = UserMessage.from(
                 TextContent.from("What do you see?"),
                 ImageContent.from(base64EncodedImage, "image/png")
@@ -53,6 +55,7 @@ class AnthropicChatModelTest {
     void AnthropicChatModel_with_cache_system_message_Example() {
         ChatModel modelWithCache = AnthropicChatModel.builder()
                 .apiKey(System.getenv("ANTHROPIC_API_KEY"))
+                // prompt caching 需要启用对应 beta，并通过 cacheSystemMessages 缓存长 system message。
                 .beta("prompt-caching-2024-07-31")
                 .modelName(CLAUDE_HAIKU_4_5_20251001)
                 .cacheSystemMessages(true)

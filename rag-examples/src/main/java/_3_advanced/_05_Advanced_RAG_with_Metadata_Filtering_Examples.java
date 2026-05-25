@@ -27,6 +27,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metadataKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * 中文导读：这个示例学习 metadata filtering，在语义检索前先用元数据缩小搜索范围。
+ * 静态过滤适合固定条件，动态过滤适合按用户/请求变化的权限、租户或业务条件。
+ */
 class _05_Advanced_RAG_with_Metadata_Filtering_Examples {
 
     /**
@@ -53,6 +57,7 @@ class _05_Advanced_RAG_with_Metadata_Filtering_Examples {
         embeddingStore.add(embeddingModel.embed(birdsSegment).content(), birdsSegment);
         // embeddingStore contains segments about both dogs and birds
 
+        // 静态 Filter 在构建 retriever 时就固定下来，每次查询都只搜索 dog 相关片段。
         Filter onlyDogs = metadataKey("animal").isEqualTo("dog");
 
         ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
@@ -93,6 +98,7 @@ class _05_Advanced_RAG_with_Metadata_Filtering_Examples {
         embeddingStore.add(embeddingModel.embed(user2Info).content(), user2Info);
         // embeddingStore contains information about both first and second user
 
+        // 动态 Filter 可以读取 Query.metadata()，常用于多租户数据隔离。
         Function<Query, Filter> filterByUserId =
                 (query) -> metadataKey("userId").isEqualTo(query.metadata().chatMemoryId().toString());
 
@@ -140,6 +146,7 @@ class _05_Advanced_RAG_with_Metadata_Filtering_Examples {
                 .addColumn("year", "INT")
                 .build();
 
+        // 让 LLM 生成过滤条件很灵活，但要谨慎设计表定义和权限边界，避免错误过滤或越权。
         LanguageModelSqlFilterBuilder sqlFilterBuilder = new LanguageModelSqlFilterBuilder(chatModel, tableDefinition);
 
         EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();

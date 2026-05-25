@@ -13,6 +13,10 @@ import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static java.time.Duration.ofSeconds;
 import static java.util.Arrays.asList;
 
+/**
+ * 这个示例学习两种提示词模板：手动变量替换和结构化提示词对象。
+ * 模板适合把可变输入和固定指令分开，避免在业务代码里拼接一大段 prompt。
+ */
 public class _03_PromptTemplate {
 
     static class Simple_Prompt_Template_Example {
@@ -26,12 +30,14 @@ public class _03_PromptTemplate {
                     .build();
 
             String template = "Create a recipe for a {{dishType}} with the following ingredients: {{ingredients}}";
+            // PromptTemplate 会校验并替换 {{变量名}}，比手写字符串拼接更清晰。
             PromptTemplate promptTemplate = PromptTemplate.from(template);
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("dishType", "oven dish");
             variables.put("ingredients", "potato, tomato, feta, olive oil");
 
+            // apply() 把业务变量填入模板，得到可发送给模型的 Prompt。
             Prompt prompt = promptTemplate.apply(variables);
 
             String response = model.chat(prompt.text());
@@ -82,6 +88,7 @@ public class _03_PromptTemplate {
                     asList("cucumber", "tomato", "feta", "onion", "olives")
             );
 
+            // StructuredPromptProcessor 会读取 @StructuredPrompt，把对象字段映射到模板变量。
             Prompt prompt = StructuredPromptProcessor.toPrompt(createRecipePrompt);
 
             String recipe = model.chat(prompt.text());

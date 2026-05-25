@@ -20,6 +20,7 @@ public class InfinispanEmbeddingStoreExample {
     public static void main(String[] args) {
 
         InfinispanContainer infinispan = new InfinispanContainer();
+        // Testcontainers 启动临时 Infinispan Server，并通过 Hot Rod 客户端连接。
         infinispan.start();
 
         ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -29,9 +30,10 @@ public class InfinispanEmbeddingStoreExample {
                 .authentication()
                 .username(DEFAULT_USERNAME)
                 .password(DEFAULT_PASSWORD);
-        // just to avoid docker 4 mac issues, don't use in production!!
+        // 仅用于规避 Docker for Mac 网络问题，生产环境不要使用 BASIC client intelligence。
         builder.clientIntelligence(ClientIntelligence.BASIC);
 
+        // cacheName 指定保存向量和文本的缓存，dimension 必须与 embedding 模型输出维度一致。
         EmbeddingStore<TextSegment> embeddingStore = InfinispanEmbeddingStore.builder()
                 .cacheName("my-cache")
                 .dimension(384)
@@ -40,6 +42,7 @@ public class InfinispanEmbeddingStoreExample {
 
         EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
+        // 文本先转换为 embedding，再写入 Infinispan 的向量缓存。
         TextSegment segment1 = TextSegment.from("I like football.");
         Embedding embedding1 = embeddingModel.embed(segment1).content();
         embeddingStore.add(embedding1, segment1);
@@ -48,6 +51,7 @@ public class InfinispanEmbeddingStoreExample {
         Embedding embedding2 = embeddingModel.embed(segment2).content();
         embeddingStore.add(embedding2, segment2);
 
+        // 查询向量与缓存中的向量做相似度匹配，返回最相关的一条文本。
         Embedding queryEmbedding = embeddingModel.embed("What is your favourite sport?").content();
         EmbeddingSearchRequest embeddingSearchRequest = EmbeddingSearchRequest.builder()
                 .queryEmbedding(queryEmbedding)

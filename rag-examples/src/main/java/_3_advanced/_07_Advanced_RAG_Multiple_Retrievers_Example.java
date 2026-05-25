@@ -31,6 +31,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习同时使用多个 retriever，把不同文档源的候选内容一起交给 RAG 流程。
+ * 适合知识分散但每次都希望综合查询的场景；数据源很多时可改用 query routing。
+ */
 public class _07_Advanced_RAG_Multiple_Retrievers_Example {
 
 
@@ -74,6 +78,7 @@ public class _07_Advanced_RAG_Multiple_Retrievers_Example {
                 .build();
 
         // Let's create a query router that will route each query to both retrievers.
+        // DefaultQueryRouter 会把每个问题路由到所有给定 retriever，不做智能选择。
         QueryRouter queryRouter = new DefaultQueryRouter(contentRetriever1, contentRetriever2);
 
         RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()

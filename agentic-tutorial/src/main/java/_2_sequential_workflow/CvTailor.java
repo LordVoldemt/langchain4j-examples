@@ -7,6 +7,8 @@ import dev.langchain4j.service.V;
 
 public interface CvTailor {
 
+    // SystemMessage 放长期角色和上下文，UserMessage 放本次调用的具体指令。
+    // masterCv 来自上一个 Agent 的 outputKey，因此 key 名是顺序编排能串起来的关键。
     @Agent("Tailors a CV according to specific instructions")
     @SystemMessage("""
                 Here is a CV that needs tailoring to a specific job description, feedback or other instruction.

@@ -19,6 +19,10 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 import static dev.langchain4j.model.openai.OpenAiChatModelName.GPT_4_O_MINI;
 import static shared.Utils.*;
 
+/**
+ * 中文导读：这个示例学习最省心的 RAG 写法，把文档加载、向量化和检索器接入 AI Service。
+ * 适合先跑通“让模型根据本地文档回答”的完整链路，再去 Naive/Advanced 示例理解细节。
+ */
 public class Easy_RAG_Example {
 
     private static final ChatModel CHAT_MODEL = OpenAiChatModel.builder()
@@ -37,6 +41,7 @@ public class Easy_RAG_Example {
     public static void main(String[] args) {
 
         // First, let's load documents that we want to use for RAG
+        // 只加载 resources/documents 下的 txt 文件；自己的文档路径和格式需要相应调整。
         List<Document> documents = loadDocuments(toPath("documents/"), glob("*.txt"));
 
         // Second, let's create an assistant that will have access to our documents
@@ -59,6 +64,7 @@ public class Easy_RAG_Example {
 
         // Here, we are ingesting our documents into the store.
         // Under the hood, a lot of "magic" is happening, but we can ignore it for now.
+        // EmbeddingStoreIngestor 会自动完成切分、embedding 和写入向量库，适合入门但可控性较低。
         EmbeddingStoreIngestor.ingest(documents, embeddingStore);
 
         // Lastly, let's create a content retriever from an embedding store.

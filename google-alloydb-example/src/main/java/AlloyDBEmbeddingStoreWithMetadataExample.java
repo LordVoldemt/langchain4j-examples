@@ -25,7 +25,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
         public static void main(String[] args) {
 
                 EmbeddingModel embeddingModel = new AllMiniLmL6V2EmbeddingModel();
-                // Create connection pool
+                // 从环境变量读取 AlloyDB 连接信息；示例不内置真实账号或密码。
                 AlloyDBEngine engine = new AlloyDBEngine.Builder()
                                 .projectId(System.getenv("ALLOYDB_PROJECT_ID"))
                                 .region(System.getenv("ALLOYDB_REGION"))
@@ -36,7 +36,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
                                 .password(System.getenv("ALLOYDB_PASSWORD")).ipType("public")
                                 .build();
 
-                // Create embedding store table with metadata columns
+                // 创建向量表时声明 userId metadata 列，便于数据库侧执行过滤。
                 List<MetadataColumn> metadataColumns = new ArrayList<>();
                 metadataColumns.add(new MetadataColumn("userId", "uuid", true));
                 EmbeddingStoreConfig embeddingStoreConfig =
@@ -47,7 +47,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
 
                 engine.initVectorStoreTable(embeddingStoreConfig);
 
-                // Initialize embedding store to use metadata columns
+                // EmbeddingStore 绑定到刚创建的表，并告知哪些 metadata 字段需要映射为表列。
                 List<String> metaColumnNames = metadataColumns.stream().map(MetadataColumn::getName)
                                 .collect(Collectors.toList());
 
@@ -55,7 +55,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
                                 new AlloyDBEmbeddingStore.Builder(engine, TABLE_NAME)
                                                 .metadataColumns(metaColumnNames).build();
 
-                // Add entries to embedding store
+                // 写入文本、embedding 和 userId；后续可用 userId 过滤多租户或用户级数据。
                 Metadata metadata1 = new Metadata();
                 UUID user1 = UUID.randomUUID();
                 metadata1.put("userId", user1);
@@ -71,7 +71,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
                 Embedding embedding2 = embeddingModel.embed(segment2).content();
                 embeddingStore.add(embedding2, segment2);
 
-                // Search embedding store
+                // 不带过滤条件时，会在整张向量表中按语义相似度检索。
                 Embedding queryEmbedding =
                                 embeddingModel.embed("What is your favorite animal?").content();
                 EmbeddingSearchRequest searchRequest = EmbeddingSearchRequest.builder()
@@ -84,7 +84,7 @@ public class AlloyDBEmbeddingStoreWithMetadataExample {
                 System.out.println(embeddingMatch.score());
                 System.out.println(embeddingMatch.embedded().text());
 
-                // Search embedding store with filter
+                // 带 metadata 过滤时，只有 userId 匹配的行会参与向量相似度搜索。
                 Filter onlyForUser1 = metadataKey("userId").isEqualTo(user1);
 
                 EmbeddingSearchRequest embeddingSearchRequest1 = EmbeddingSearchRequest.builder()

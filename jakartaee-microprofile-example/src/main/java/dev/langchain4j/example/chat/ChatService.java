@@ -36,6 +36,7 @@ public class ChatService {
         logger.info("Server received message \"" + message + "\" "
                     + "from session: " + session.getId());
 
+        // WebSocket 每条消息都会进入这里；sessionId 被用作 MemoryId，让不同浏览器连接拥有独立记忆。
         String answer;
         try {
             String sessionId = session.getId();
@@ -45,6 +46,7 @@ public class ChatService {
         }
 
         try {
+            // Encoder 会在发送前做简单格式转换，最后由 WebSocket 推回前端。
             session.getBasicRemote().sendObject(answer);
         } catch (Exception e) {
             e.printStackTrace();

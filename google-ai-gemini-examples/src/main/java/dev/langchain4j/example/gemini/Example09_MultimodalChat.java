@@ -29,7 +29,7 @@ public class Example09_MultimodalChat {
                 .modelName("gemini-2.5-flash-lite")
                 .build();
 
-        // Example using a public image URL
+        // 使用公开图片 URL 作为输入；生产环境也可以换成业务系统里的图片地址。
         String imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg";
 
         UserMessage userMessage = UserMessage.from(

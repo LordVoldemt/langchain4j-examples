@@ -29,6 +29,7 @@ class VertexAiGeminiChatModelTest {
     private static final String MODEL_NAME = "gemini-pro";
 
     ChatModel model = VertexAiGeminiChatModel.builder()
+            // project/location/modelName 共同决定调用哪个 Vertex AI 区域中的 Gemini 模型。
             .project(PROJECT)
             .location(LOCATION)
             .modelName(MODEL_NAME)
@@ -47,6 +48,7 @@ class VertexAiGeminiChatModelTest {
     @Test
     void Low_level_Tools_Example() {
 
+        // 低层 tools API 只让模型规划工具调用，应用侧仍要负责执行 Calculator。
         List<ToolSpecification> toolSpecifications = ToolSpecifications.toolSpecificationsFrom(new Calculator());
 
         ChatRequest chatRequest = ChatRequest.builder()
@@ -81,6 +83,7 @@ class VertexAiGeminiChatModelTest {
         Assistant assistant = AiServices.builder(Assistant.class)
                 .chatModel(model)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
+                // 高层 AiServices 会自动完成工具执行和结果回传，适合业务代码少写样板逻辑。
                 .tools(calculator)
                 .build();
 

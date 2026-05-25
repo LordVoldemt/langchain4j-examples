@@ -50,6 +50,7 @@ public class AzureOpenAIConfig {
         // Log an informational message
         Logger.info("Initializing AzureOpenAIConfig with file path: {}", filePath);
         // Read and parse the JSON configuration file
+        // 凭证从用户主目录的 JSON 文件读取，不应把真实 key 写进示例源码。
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(new File(filePath));
 

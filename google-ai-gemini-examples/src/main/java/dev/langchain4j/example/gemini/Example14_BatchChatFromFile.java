@@ -65,7 +65,7 @@ public class Example14_BatchChatFromFile {
                                 .build())
         );
 
-        // Step 1: Write requests to a local JSONL file
+        // 第一步：把每个请求写成 JSONL，一行代表一个 batch 子任务。
         var tempFile = Files.createTempFile("batch-requests-", ".jsonl");
         var writer = JsonLinesWriters.streaming(tempFile);
         System.out.println("Writing batch requests to: " + tempFile);
@@ -75,7 +75,7 @@ public class Example14_BatchChatFromFile {
         System.out.println("JSONL content:");
         Files.readAllLines(tempFile).forEach(line -> System.out.println("  " + line));
 
-        // Step 2: Upload the file using Gemini Files API
+        // 第二步：上传 JSONL 文件，后续 batch job 会引用这个文件。
         System.out.println("\nUploading file to Gemini Files API...");
         var uploadedFile = geminiFiles.uploadFile(tempFile, "batch-requests.jsonl");
         System.out.println("Uploaded file URI: " + uploadedFile.uri());

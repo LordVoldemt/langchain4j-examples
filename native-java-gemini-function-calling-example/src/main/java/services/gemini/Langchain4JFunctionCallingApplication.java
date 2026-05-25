@@ -56,6 +56,7 @@ public class Langchain4JFunctionCallingApplication {
 		record Transaction(String id) { }
 		record Status(String name) { }
 
+		// 工具背后的业务数据集。模型只负责决定要查哪些交易号，真实状态由 Java 方法返回。
 		private static final Map<Transaction, Status> DATASET = Map.of(
 				new Transaction("001"), new Status("pending"),
 				new Transaction("002"), new Status("approved"),
@@ -64,11 +65,13 @@ public class Langchain4JFunctionCallingApplication {
 		@Tool("Get the status of a payment transaction")
 		public Status paymentStatus(@P("The id of the payment transaction") String transaction) {
 			System.out.println();
+			// 返回 record 对象可以演示结构化工具结果，LangChain4j 会把它传回模型继续生成最终 JSON。
 			return DATASET.get(new Transaction(transaction));
 		}
 	}
 
 	interface Assistant {
+		// Assistant 接口保持简单，函数调用能力通过 .tools(service) 注入。
 		@SystemMessage("You are a helpful assistant that can answer questions about payment transactions.")
 		String chat(String userMessage);
 	}
@@ -103,6 +106,7 @@ public class Langchain4JFunctionCallingApplication {
 
 		FunctionCallingService service = new FunctionCallingService();
 
+		// 同一个工具服务可以同时用于 REST 和 gRPC 模型客户端，方便比较传输方式而不改变业务逻辑。
 		Assistant assistant = AiServices.builder(Assistant.class)
 				.chatModel(chatModel)
 				.chatMemory(MessageWindowChatMemory.withMaxMessages(10))
@@ -121,6 +125,7 @@ public class Langchain4JFunctionCallingApplication {
 			GenerativeModel generativeModel = new GenerativeModel(chatModelName, vertexAi);
 			GenerationConfig generationConfig = GenerationConfig.newBuilder().setTemperature(0.2f).setMaxOutputTokens(1000).build();
 
+			// REST 分支手动构造 VertexAI/GenerativeModel，再包装成 LangChain4j 的 ChatModel。
 			ChatModel chatModel = new VertexAiGeminiChatModel(generativeModel, generationConfig, 1);
 
 			FunctionCallingService service = new FunctionCallingService();
@@ -143,6 +148,7 @@ public class Langchain4JFunctionCallingApplication {
 				// Register all the classes and methods that are used through reflection
 				// or dynamic proxy generation in LangChain4j, especially those
 				// related to function calling.
+				// Native image/AOT 场景下，代理接口和 @Tool 方法需要注册反射提示，否则运行期可能找不到。
 				// Register method for reflection
 				var mcs = MemberCategory.values();
 				hints.reflection().registerType(Langchain4JFunctionCallingApplication.Assistant.class, mcs);

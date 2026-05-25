@@ -33,6 +33,7 @@ import java.util.List;
 public class Example06_ChatWithTools {
 
     public static void main(String[] args) {
+        // tools 示例要求模型先决定是否调用 Java 方法，再由应用执行工具并继续对话。
         ChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(System.getenv("GOOGLE_AI_GEMINI_API_KEY"))
                 .modelName("gemini-2.5-flash-lite")

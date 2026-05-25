@@ -19,6 +19,7 @@ import dev.langchain4j.agent.tool.Tool;
 public class OrderService {
     private static final Logger LOGGER = Logger.getLogger(OrderService.class.getName());
 
+    // @Tool 把保存订单能力暴露给模型。模型决定需要下单时，会回调这个普通 Java 方法。
     /**
      * Saves a new order and returns its unique order ID.
      *
